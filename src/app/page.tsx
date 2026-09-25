@@ -1,69 +1,142 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import "@/styles/home.css";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+export default function HomePage() {
+    return (
+        <div className="home-page">
+
+            <div className="home-header">
+                <h1>Início</h1>
+
+                <p>
+                    Bem-vindo ao GestorERP
+                </p>
+            </div>
+
+
+            <div className="home-stats">
+
+                <div className="home-stat-card">
+                    <p className="home-stat-title">
+                        Pedidos
+                    </p>
+
+                    <p className="home-stat-value">
+                        0
+                    </p>
+
+                    <p className="home-stat-description">
+                        Pedidos realizados
+                    </p>
+                </div>
+
+
+                <div className="home-stat-card">
+                    <p className="home-stat-title">
+                        Vendas
+                    </p>
+
+                    <p className="home-stat-value">
+                        R$ 0,00
+                    </p>
+
+                    <p className="home-stat-description">
+                        Total de vendas
+                    </p>
+                </div>
+
+
+                <div className="home-stat-card">
+                    <p className="home-stat-title">
+                        Clientes
+                    </p>
+
+                    <p className="home-stat-value">
+                        0
+                    </p>
+
+                    <p className="home-stat-description">
+                        Clientes cadastrados
+                    </p>
+                </div>
+
+
+                <div className="home-stat-card">
+                    <p className="home-stat-title">
+                        Produtos
+                    </p>
+
+                    <p className="home-stat-value">
+                        0
+                    </p>
+
+                    <p className="home-stat-description">
+                        Produtos cadastrados
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div className="quick-access">
+
+                <div className="quick-access-header">
+                    <h2>
+                        Acesso rápido
+                    </h2>
+
+                    <p>
+                        Acesse rapidamente os principais módulos do sistema.
+                    </p>
+                </div>
+
+
+                <div className="quick-access-grid">
+
+                    <a
+                        href="/pedidos"
+                        className="quick-access-card"
+                    >
+                        <h3>
+                            Pedidos de Venda
+                        </h3>
+
+                        <p>
+                            Consulte e gerencie seus pedidos.
+                        </p>
+                    </a>
+
+
+                    <a
+                        href="/clientes"
+                        className="quick-access-card"
+                    >
+                        <h3>
+                            Clientes
+                        </h3>
+
+                        <p>
+                            Consulte seus clientes.
+                        </p>
+                    </a>
+
+
+                    <a
+                        href="/compras"
+                        className="quick-access-card"
+                    >
+                        <h3>
+                            Compras
+                        </h3>
+
+                        <p>
+                            Acesse o módulo de compras.
+                        </p>
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    );
 }

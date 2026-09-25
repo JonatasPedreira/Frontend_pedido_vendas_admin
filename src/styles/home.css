@@ -1,0 +1,180 @@
+/* ================================
+   PÁGINA INICIAL
+================================ */
+
+.home-page {
+    width: 100%;
+    min-height: 100%;
+}
+
+/* Cabeçalho */
+
+.home-header {
+    margin-bottom: 28px;
+}
+
+.home-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.home-header p {
+    margin: 6px 0 0;
+    font-size: 15px;
+    color: #6b7280;
+}
+
+
+/* ================================
+   CARDS DE RESUMO
+================================ */
+
+.home-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.home-stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 22px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.home-stat-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.home-stat-value {
+    margin: 8px 0 4px;
+    font-size: 27px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.home-stat-description {
+    margin: 0;
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+
+/* ================================
+   ACESSO RÁPIDO
+================================ */
+
+.quick-access {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.quick-access-header {
+    margin-bottom: 20px;
+}
+
+.quick-access-header h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.quick-access-header p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.quick-access-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.quick-access-card {
+    display: block;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    text-decoration: none;
+    background: #ffffff;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.quick-access-card:hover {
+    background: #f8fafc;
+    border-color: #d1d5db;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.quick-access-card h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.quick-access-card p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+
+/* ================================
+   RESPONSIVIDADE
+================================ */
+
+@media (max-width: 1100px) {
+    .home-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quick-access-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 700px) {
+    .home-header h1 {
+        font-size: 24px;
+    }
+
+    .home-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-access-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-stat-card {
+        padding: 18px;
+    }
+
+    .quick-access {
+        padding: 18px;
+    }
+}
