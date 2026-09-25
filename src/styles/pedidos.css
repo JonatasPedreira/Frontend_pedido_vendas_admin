@@ -110,6 +110,37 @@
 .summary-card small.negative {
     color: #dc3545;
 }
+.card-variation {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.card-variation.positive {
+    color: #16a34a !important;
+}
+
+.card-variation.negative {
+    color: #dc2626 !important;
+}
+
+.card-variation.neutral {
+    color: #6b7280 !important;
+}
+
+.card-variation .variation-arrow {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.card-variation .variation-label {
+    margin-left: 3px;
+    font-weight: 400;
+    color: #6b7280 !important;
+}
 
 /* FILTROS */
 

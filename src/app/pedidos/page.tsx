@@ -18,9 +18,51 @@ function getStatusInfo(situacao: number) {
     return mapa[situacao] ?? { label: `Status ${situacao}`, className: "aguardando" };
 }
 
+function Variacao({
+    valor,
+    mostrarComparacao,
+}: {
+    valor: number;
+    mostrarComparacao: boolean;
+}) {
+    if (!mostrarComparacao) {
+        return null;
+    }
+
+    const valorLimitado = Math.max(-100, Math.min(100, valor));
+
+    const aumentou = valor > 0;
+    const diminuiu = valor < 0;
+
+    return (
+        <div
+            className={`card-variation ${
+                aumentou
+                    ? "positive"
+                    : diminuiu
+                    ? "negative"
+                    : "neutral"
+            }`}
+        >
+            <span className="variation-arrow">
+                {aumentou ? "↑" : diminuiu ? "↓" : "→"}
+            </span>
+
+            <span>
+                {Math.abs(valorLimitado).toFixed(1)}%
+            </span>
+
+            <span className="variation-label">
+                vs mês anterior
+            </span>
+        </div>
+    );
+}
+
 
 export default function PedidosPage() {
     const [pedidos, setPedidos] = useState<Order[]>([]);
+    const [pedidosFiltrados, setPedidosFiltrados] = useState<Order[]>([]);
     const [clientes, setClientes] = useState<Client[]>([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
@@ -30,6 +72,7 @@ export default function PedidosPage() {
         Promise.all([getOrders(), getClients()])
             .then(([pedidosData, clientesData]) => {
                 setPedidos(pedidosData);
+                setPedidosFiltrados(pedidosData);
                 setClientes(clientesData);
             })
             .catch(() => setErro("Não foi possível carregar os pedidos."))
@@ -41,9 +84,9 @@ export default function PedidosPage() {
     const ticketMedio = totalPedidos > 0 ? faturamento / totalPedidos : 0;
     const pedidosEmAberto = pedidos.filter((p) => p.SIT_CODIGO !== 3).length; // ajuste o "3" quando confirmar o código de "Faturado"
 
-    const totalPaginas = Math.max(1, Math.ceil(pedidos.length / ITENS_POR_PAGINA));
+    const totalPaginas = Math.max(1, Math.ceil(pedidosFiltrados.length / ITENS_POR_PAGINA));
     const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
-    const pedidosDaPagina = pedidos.slice(inicio, inicio + ITENS_POR_PAGINA);
+    const pedidosDaPagina = pedidosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA);
 
     const [filtroCliente, setFiltroCliente] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
@@ -51,6 +94,76 @@ export default function PedidosPage() {
     const [filtroDataInicio, setFiltroDataInicio] = useState("");
     const [filtroDataFim, setFiltroDataFim] = useState("");
 
+    const pedidosAtuais = pedidosFiltrados;
+
+    const faturamentoAtual = pedidosAtuais.reduce(
+        (soma, p) => soma + p.VEN_TOTALLIQUIDO,
+        0
+    );
+
+    const totalPedidosAtual = pedidosAtuais.length;
+
+    const ticketMedioAtual =
+            totalPedidosAtual > 0
+                ? faturamentoAtual / totalPedidosAtual
+                : 0;
+
+    const pedidosEmAbertoAtual = pedidosAtuais.filter(
+            (p) => p.SIT_CODIGO !== 3
+        ).length;
+
+    let pedidosAnteriores: Order[] = [];
+
+    if (filtroDataInicio && filtroDataFim) {
+        const periodoAnterior = obterPeriodoAnterior(
+            filtroDataInicio,
+            filtroDataFim
+        );
+
+        pedidosAnteriores = pedidos.filter((pedido) => {
+            const dataPedido = new Date(pedido.VEN_DATA);
+
+            return (
+                dataPedido >= periodoAnterior.inicio &&
+                dataPedido <= periodoAnterior.fim
+            );
+        });
+    }
+    const faturamentoAnterior = pedidosAnteriores.reduce(
+        (soma, p) => soma + p.VEN_TOTALLIQUIDO,
+        0
+    );
+
+    const totalPedidosAnterior = pedidosAnteriores.length;
+
+    const ticketMedioAnterior =
+        totalPedidosAnterior > 0
+            ? faturamentoAnterior / totalPedidosAnterior
+            : 0;
+
+    const pedidosEmAbertoAnterior = pedidosAnteriores.filter(
+        (p) => p.SIT_CODIGO !== 3
+    ).length;
+
+    const variacaoPedidos = calcularVariacao(
+        totalPedidosAtual,
+        totalPedidosAnterior
+    );
+
+    const variacaoFaturamento = calcularVariacao(
+        faturamentoAtual,
+        faturamentoAnterior
+    );
+
+    const variacaoTicket = calcularVariacao(
+        ticketMedioAtual,
+        ticketMedioAnterior
+    );
+
+    const variacaoAbertos = calcularVariacao(
+        pedidosEmAbertoAtual,
+        pedidosEmAbertoAnterior
+    );
     function filtrarPedidos() {
         let filtrados = pedidos;
         if (filtroCliente) {
@@ -74,7 +187,7 @@ export default function PedidosPage() {
                 return true;
             });
         }
-        setPedidos(filtrados);
+        setPedidosFiltrados(filtrados);
         setPaginaAtual(1);
     }
     function limparFiltros() {
@@ -85,8 +198,10 @@ export default function PedidosPage() {
         setFiltroDataFim("");
         Promise.all([getOrders(), getClients()]).then(([pedidosData, clientesData]) => {
             setPedidos(pedidosData);
+            setPedidosFiltrados(pedidosData);
             setClientes(clientesData);
         });
+        setPaginaAtual(1);
     }
 
     function gerarPaginas() {
@@ -113,6 +228,33 @@ export default function PedidosPage() {
         return paginas;
     }
 
+    function calcularVariacao(atual: number, anterior: number){
+        if (anterior === 0){
+            if (atual === 0) return 0;
+            return 100;
+        }
+
+        return ((atual - anterior) / anterior ) * 100;
+    }
+    function obterPeriodoAnterior(dataInicio: string, dataFim: string) {
+        const inicio = new Date(`${dataInicio}T00:00:00`);
+        const fim = new Date(`${dataFim}T00:00:00`);
+
+        const quantidadeDias =
+            Math.floor((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+        const fimAnterior = new Date(inicio);
+        fimAnterior.setDate(fimAnterior.getDate() - 1);
+
+        const inicioAnterior = new Date(fimAnterior);
+        inicioAnterior.setDate(inicioAnterior.getDate() - quantidadeDias + 1);
+
+        return {
+            inicio: inicioAnterior,
+            fim: fimAnterior,
+        };
+    }
+
     return (
         <div className="pedidos-page">
             <div className="breadcrumb">
@@ -132,19 +274,35 @@ export default function PedidosPage() {
             <div className="summary-cards">
                 <div className="summary-card">
                     <span>Pedidos no Mês</span>
-                    <strong>{totalPedidos}</strong>
+                    <strong>{totalPedidosAtual}</strong>
+                    <Variacao
+                        valor={variacaoPedidos}
+                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                    />
                 </div>
                 <div className="summary-card">
                     <span>Faturamento (R$)</span>
-                    <strong>{faturamento.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
+                    <strong>{faturamentoAtual.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
+                    <Variacao
+                        valor={variacaoFaturamento}
+                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                    />
                 </div>
                 <div className="summary-card">
                     <span>Ticket Médio</span>
-                    <strong>R$ {ticketMedio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
+                    <strong>R$ {ticketMedioAtual.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
+                    <Variacao
+                        valor={variacaoTicket}
+                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                    />
                 </div>
                 <div className="summary-card">
                     <span>Pedidos em Aberto</span>
-                    <strong>{pedidosEmAberto}</strong>
+                    <strong>{pedidosEmAbertoAtual}</strong>
+                    <Variacao
+                        valor={variacaoAbertos}
+                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                    />
                 </div>
             </div>
 
@@ -231,7 +389,7 @@ export default function PedidosPage() {
 
                 <div className="table-footer">
                     <span>
-                        Mostrando {pedidos.length === 0 ? 0 : inicio + 1} a {Math.min(inicio + ITENS_POR_PAGINA, pedidos.length)} de {pedidos.length} registros
+                        Mostrando {pedidosFiltrados.length === 0 ? 0 : inicio + 1} a {Math.min(inicio + ITENS_POR_PAGINA, pedidosFiltrados.length)} de {pedidosFiltrados.length} registros
                     </span>
 
                     <div className="pagination">
