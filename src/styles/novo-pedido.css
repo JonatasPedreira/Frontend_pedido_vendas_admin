@@ -313,13 +313,23 @@
         grid-column: span 1;
     }
 
-    .produto-pesquisa {
+    .novo-pedido-page .produto-pesquisa {
         flex-direction: column;
+        gap: 8px;
     }
 
-    .produto-pesquisa button {
+    .novo-pedido-page .produto-pesquisa input {
         width: 100%;
-        justify-content: center;
+        height: 48px !important;
+        min-height: 48px;
+        box-sizing: border-box;
+    }
+
+    .novo-pedido-page .produto-pesquisa button {
+        width: 100%;
+        height: 48px !important;
+        min-height: 48px;
+        box-sizing: border-box;
     }
 
     .produto-resultados {

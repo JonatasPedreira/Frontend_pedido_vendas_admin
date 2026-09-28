@@ -14,11 +14,12 @@ export interface Product {
     PRECO2: number;
 }
 
-export async function getProducts(): Promise<Product[]> {
+export async function getProducts(search?: string): Promise<Product[]> {
     const { data } = await api.get<Product[]>("/api/v1/products", {
         params: {
             pageSize: 50,
             storeId: 1,
+            ...(search?.trim() ? { search: search.trim() } : {}),
         },
     });
 

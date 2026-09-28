@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -36,9 +36,34 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const [isFiscalOpen, setIsFiscalOpen] = useState(false);
     const [isCadastroOpen, setIsCadastroOpen] = useState(false);
     const [isRelatorioOpen, setIsRelatorioOpen] = useState(false);
+    const [isMobileVisible, setIsMobileVisible] = useState(true);
+
+    useEffect(() => {
+        let ultimaPosicao = window.scrollY;
+
+        function controlarScroll() {
+            const posicaoAtual = window.scrollY;
+
+            if (window.innerWidth <= 800){
+                if (posicaoAtual > ultimaPosicao && posicaoAtual > 10){
+                    setIsMobileVisible(false);
+                } else if (posicaoAtual < ultimaPosicao){
+                    setIsMobileVisible(true);
+                }
+            }
+
+            ultimaPosicao = posicaoAtual;
+        }
+
+        window.addEventListener("scroll", controlarScroll, {passive: true,});
+
+        return () => {
+            window.removeEventListener("scroll", controlarScroll);
+        }
+    }, []);
 
     return (
-        <aside className={`sidebar ${isOpen ? "block" : "hidden"}`}>
+        <aside className={`sidebar ${isOpen ? "block" : "hidden"} ${isMobileVisible ? "mobile-visible" : "mobile-hidden"}`}>
             <section className="side-sec">
 
                 <div className="logo">

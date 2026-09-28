@@ -215,6 +215,10 @@
         font-size: 16px;
     }
 
+    .menu-toggler-btn{
+        visibility: hidden;
+    }
+
     .search-container {
         display: none;
     }

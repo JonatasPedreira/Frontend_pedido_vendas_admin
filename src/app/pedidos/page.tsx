@@ -6,6 +6,7 @@ import { getOrders, Order } from "@/app/lib/orders";
 import { getClients, Client } from "@/app/lib/clients";
 
 const ITENS_POR_PAGINA = 10;
+const PEDIDOS_POR_CARGA = 100;
 
 // ⚠️ mapeamento provisório — ajuste os números conforme a tabela real de SIT_CODIGO
 function getStatusInfo(situacao: number) {
@@ -67,32 +68,42 @@ export default function PedidosPage() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
     const [paginaAtual, setPaginaAtual] = useState(1);
+    const [paginaApiAtual, setPaginaApiAtual] = useState(1);
+    const [totalPedidos, setTotalPedidos] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(1);
 
     useEffect(() => {
-        Promise.all([getOrders(), getClients()])
+        Promise.all([
+            getOrders(1, ITENS_POR_PAGINA),
+            getClients()
+        ])
             .then(([pedidosData, clientesData]) => {
-                setPedidos(pedidosData);
-                setPedidosFiltrados(pedidosData);
+                setPedidos(pedidosData.pedidos);
+                setPedidosFiltrados(pedidosData.pedidos);
                 setClientes(clientesData);
+
+                setTotalPedidos(pedidosData.totalCount);
+                setPaginaApiAtual(1);
+                setTotalPaginas(Math.ceil(pedidosData.totalCount / ITENS_POR_PAGINA));
             })
             .catch(() => setErro("Não foi possível carregar os pedidos."))
             .finally(() => setCarregando(false));
     }, []);
 
-    const totalPedidos = pedidos.length;
     const faturamento = pedidos.reduce((soma, p) => soma + p.VEN_TOTALLIQUIDO, 0);
     const ticketMedio = totalPedidos > 0 ? faturamento / totalPedidos : 0;
     const pedidosEmAberto = pedidos.filter((p) => p.SIT_CODIGO !== 3).length; // ajuste o "3" quando confirmar o código de "Faturado"
-
-    const totalPaginas = Math.max(1, Math.ceil(pedidosFiltrados.length / ITENS_POR_PAGINA));
-    const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
-    const pedidosDaPagina = pedidosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA);
-
     const [filtroCliente, setFiltroCliente] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
     const [filtroVendedor, setFiltroVendedor] = useState("");
     const [filtroDataInicio, setFiltroDataInicio] = useState("");
     const [filtroDataFim, setFiltroDataFim] = useState("");
+    const [filtroAtivo, setFiltroAtivo] = useState(false);
+
+    const totalPaginasFiltro = Math.max(1, Math.ceil(pedidosFiltrados.length / ITENS_POR_PAGINA));
+    const inicio = filtroAtivo ? (paginaAtual - 1) * ITENS_POR_PAGINA : ((paginaAtual - 1) % (PEDIDOS_POR_CARGA / ITENS_POR_PAGINA)) * ITENS_POR_PAGINA;
+    const pedidosDaPagina = pedidosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA);
+
 
     const pedidosAtuais = pedidosFiltrados;
 
@@ -189,6 +200,36 @@ export default function PedidosPage() {
         }
         setPedidosFiltrados(filtrados);
         setPaginaAtual(1);
+        setFiltroAtivo(
+            filtroCliente !== "" ||
+            filtroStatus !== "" ||
+            filtroVendedor !== "" ||
+            filtroDataInicio !== "" ||
+            filtroDataFim !== ""
+        );
+    }
+    async function carregarPagina(pagina: number) {
+        try {
+            setCarregando(true);
+            setErro("");
+
+            const novaPaginaApi = Math.floor((pagina - 1) / 10) + 1;
+
+            if(novaPaginaApi !== paginaApiAtual){
+                const resposta = await getOrders(novaPaginaApi, PEDIDOS_POR_CARGA);
+
+                setPedidos(resposta.pedidos);
+                setPedidosFiltrados(resposta.pedidos);
+
+                setPaginaApiAtual(novaPaginaApi);
+            }
+
+            setPaginaAtual(pagina);
+        } catch {
+            setErro("Não foi possível carregar os pedidos.");
+        } finally {
+            setCarregando(false);
+        }
     }
     function limparFiltros() {
         setFiltroCliente("");
@@ -196,38 +237,67 @@ export default function PedidosPage() {
         setFiltroVendedor("");
         setFiltroDataInicio("");
         setFiltroDataFim("");
-        Promise.all([getOrders(), getClients()]).then(([pedidosData, clientesData]) => {
-            setPedidos(pedidosData);
-            setPedidosFiltrados(pedidosData);
-            setClientes(clientesData);
-        });
-        setPaginaAtual(1);
-    }
 
+        Promise.all([
+            getOrders(1, PEDIDOS_POR_CARGA),
+            getClients()
+        ]).then(([pedidosData, clientesData]) => {
+            setPedidos(pedidosData.pedidos);
+            setPedidosFiltrados(pedidosData.pedidos);
+            setClientes(clientesData);
+
+            setTotalPedidos(pedidosData.totalCount);
+
+            setTotalPaginas(
+                Math.ceil(
+                    pedidosData.totalCount / ITENS_POR_PAGINA
+                )
+            );
+
+            setPaginaApiAtual(1);
+            setPaginaAtual(1);
+            setFiltroAtivo(false);
+        });
+    }
     function gerarPaginas() {
-    const paginas: (number | string)[] = [];
-        if (totalPaginas <= 7) {
-            for (let i = 1; i <= totalPaginas; i++) {
+        const paginas: (number | string)[] = [];
+
+        const paginasExibidas = filtroAtivo
+            ? totalPaginasFiltro
+            : totalPaginas;
+
+        if (paginasExibidas <= 7) {
+            for (let i = 1; i <= paginasExibidas; i++) {
                 paginas.push(i);
             }
+
             return paginas;
         }
+
         paginas.push(1);
+
         if (paginaAtual > 4) {
             paginas.push("...");
         }
+
         const inicio = Math.max(2, paginaAtual - 1);
-        const fim = Math.min(totalPaginas - 1, paginaAtual + 1);
+        const fim = Math.min(
+            paginasExibidas - 1,
+            paginaAtual + 1
+        );
+
         for (let i = inicio; i <= fim; i++) {
             paginas.push(i);
         }
-        if (paginaAtual < totalPaginas - 3) {
+
+        if (paginaAtual < paginasExibidas - 3) {
             paginas.push("...");
         }
-        paginas.push(totalPaginas);
+
+        paginas.push(paginasExibidas);
+
         return paginas;
     }
-
     function calcularVariacao(atual: number, anterior: number){
         if (anterior === 0){
             if (atual === 0) return 0;
@@ -389,11 +459,35 @@ export default function PedidosPage() {
 
                 <div className="table-footer">
                     <span>
-                        Mostrando {pedidosFiltrados.length === 0 ? 0 : inicio + 1} a {Math.min(inicio + ITENS_POR_PAGINA, pedidosFiltrados.length)} de {pedidosFiltrados.length} registros
+                        Mostrando{" "}
+                        {pedidosFiltrados.length === 0
+                            ? 0
+                            : inicio + 1}{" "}
+                        a{" "}
+                        {Math.min(
+                            inicio + ITENS_POR_PAGINA,
+                            pedidosFiltrados.length
+                        )}{" "}
+                        de{" "}
+                        {filtroAtivo
+                            ? pedidosFiltrados.length
+                            : totalPedidos}{" "}
+                        registros
                     </span>
 
                     <div className="pagination">
-                        <button disabled={paginaAtual === 1} onClick={() => setPaginaAtual((p) => p - 1)}>‹</button>
+                        <button
+                            disabled={paginaAtual === 1}
+                            onClick={() => {
+                                if(filtroAtivo){
+                                    setPaginaAtual(paginaAtual - 1);
+                                } else {
+                                    carregarPagina(paginaAtual - 1);
+                                }
+                            }}
+                        >
+                            ‹
+                        </button>
                         {gerarPaginas().map((pagina, index) => {
                             if (pagina === "...") {
                                 return (
@@ -410,13 +504,30 @@ export default function PedidosPage() {
                                 <button
                                     key={pagina}
                                     className={pagina === paginaAtual ? "active" : ""}
-                                    onClick={() => setPaginaAtual(pagina as number)}
+                                    onClick={() => {
+                                        if(filtroAtivo){
+                                            setPaginaAtual(pagina as number);
+                                        } else {
+                                            carregarPagina(pagina as number);
+                                        }
+                                    }}
                                 >
                                     {pagina}
                                 </button>
                             );
                         })}
-                        <button disabled={paginaAtual === totalPaginas} onClick={() => setPaginaAtual((p) => p + 1)}>›</button>
+                        <button
+                            disabled={paginaAtual === (filtroAtivo ? totalPaginasFiltro : totalPaginas)}
+                            onClick={() => {
+                                if(filtroAtivo){
+                                    setPaginaAtual(paginaAtual + 1);
+                                } else {
+                                    carregarPagina(paginaAtual + 1);
+                                }
+                            }}
+                        >
+                            ›
+                        </button>
                     </div>
                 </div>
             </section>

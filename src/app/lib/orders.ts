@@ -44,10 +44,38 @@ export interface CreateOrderPayload {
     has_invoice: boolean;
     products_sold: { product_id: number; quantity: number; variant_id: number }[];
 }
+export interface OrdersResponse {
+    pedidos: Order[];
+    totalCount: number;
+    totalPages: number;
+    currentPage: number;
+    perPage: number;
+}
 
-export async function getOrders(): Promise<Order[]> {
-    const { data } = await api.get<Order[]>("/api/v1/orders");
-    return data;
+export async function getOrders(
+    page: number = 1,
+    perPage: number = 100
+): Promise<OrdersResponse> {
+    const response = await api.get<Order[]>("/api/v1/orders", {
+        params: {
+            page,
+        },
+        headers: {
+            "X-Request-Count": "true",
+        },
+    });
+
+    return {
+        pedidos: response.data,
+        totalCount: Number(response.headers["x-total-count"] ?? 0),
+        totalPages: Number(response.headers["x-total-pages"] ?? 1),
+        currentPage: Number(
+            response.headers["x-current-page"] ?? page
+        ),
+        perPage: Number(
+            response.headers["x-per-page"] ?? perPage
+        ),
+    };
 }
 
 export async function createOrder(payload: CreateOrderPayload) {

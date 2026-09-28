@@ -10,6 +10,7 @@ import { getLoggedUser } from "@/app/lib/auth";
 import { createOrder, getOrders } from "../lib/orders";
 import { getPaymentMethods, PaymentMethod } from "@/app/lib/payment-methods";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ItemPedido {
     id: number;
@@ -50,6 +51,7 @@ export default function NovoPedidoPage() {
     const [finalizando, setFinalizando] = useState(false);
     const [erroFinalizar, setErroFinalizar] = useState("");
     const router = useRouter();
+    const { user } = useAuth();
 
     function abrirSeletorArquivo() {
         arquivoInputRef.current?.click();
@@ -152,18 +154,6 @@ export default function NovoPedidoPage() {
         setDescontoGlobalValor("");
     }
 
-    useEffect(() => {
-        getOrders()
-            .then((pedidos) => {
-                const mapa = new Map<number, string>();
-                pedidos.forEach((p) => {
-                    if (p.FUN_CODIGO && p.FUN_NOME) mapa.set(p.FUN_CODIGO, p.FUN_NOME);
-                });
-                setVendedores(Array.from(mapa, ([codigo, nome]) => ({ codigo, nome })));
-            })
-            .catch(() => setVendedores([]));
-    }, []);
-
     // --- busca de cliente (debounce simples) ---
     useEffect(() => {
     const timer = setTimeout(() => {
@@ -234,30 +224,16 @@ export default function NovoPedidoPage() {
     }
     // substitui a busca manual por uma busca automática enquanto digita
     useEffect(() => {
+        const busca = produtoQuery.trim();
+
+        if (busca.length < 2) {
+            return;
+        }
+
         const timer = setTimeout(() => {
-            const busca = produtoQuery.trim().toLowerCase();
-
-            if (busca.length < 2) {
-                setResultadosProduto([]);
-                return;
-            }
-
-            getProducts()
+            getProducts(busca)
                 .then((produtos) => {
-                    const resultados = produtos.filter((produto) => {
-                        const descricao = produto.PRO_DESCRICAO?.toLowerCase() ?? "";
-                        const codigo = String(produto.PRO_CODIGO ?? "").toLowerCase();
-                        const codigoBarras =
-                            produto.PRO_CODIGOBAR?.toLowerCase() ?? "";
-
-                        return (
-                            descricao.includes(busca) ||
-                            codigo.includes(busca) ||
-                            codigoBarras.includes(busca)
-                        );
-                    });
-
-                    setResultadosProduto(resultados);
+                    setResultadosProduto(produtos);
                 })
                 .catch(() => {
                     setResultadosProduto([]);
@@ -266,6 +242,7 @@ export default function NovoPedidoPage() {
 
         return () => clearTimeout(timer);
     }, [produtoQuery]);
+
     useEffect(() => {
         getPaymentMethods().then(setFormasPagamento).catch(() => setFormasPagamento([]));
     }, []);
@@ -473,13 +450,14 @@ export default function NovoPedidoPage() {
                     </div>
 
                     <div className="form-group">
-                        <label>Vendedor <span>*</span></label>
-                        <select value={vendedor} onChange={(e) => setVendedor(Number(e.target.value))}>
-                            <option value="">Selecione o vendedor</option>
-                            {vendedores.map((v) => (
-                                <option key={v.codigo} value={v.codigo}>{v.nome}</option>
-                            ))}
-                        </select>
+                        <div className="form-group">
+                            <label>Vendedor</label>
+                            <input
+                                type="text"
+                                value={user?.name || "Usuário"}
+                                disabled
+                            />
+                        </div>
                     </div>
 
                     <div className="form-group">
