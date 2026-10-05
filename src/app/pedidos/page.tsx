@@ -2,8 +2,14 @@
 import { useEffect, useState } from "react";
 import "@/styles/pedidos.css";
 import Link from "next/link";
-import { getOrders, Order } from "@/app/lib/orders";
+import { getOrders, getOrderMetrics, Order, getOrderMetricsPeriodo } from "@/app/lib/orders";
 import { getClients, Client } from "@/app/lib/clients";
+import { getLoggedUser } from "../lib/auth";
+import Icon from "@mdi/react";
+import { mdiClockTimeThreeOutline, mdiCurrencyUsd, mdiFileDocumentOutline, mdiFinance } from "@mdi/js";
+import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBan, faCopy, faEye, faPen, faPrint } from "@fortawesome/free-solid-svg-icons";
 
 const ITENS_POR_PAGINA = 10;
 const PEDIDOS_POR_CARGA = 100;
@@ -22,9 +28,11 @@ function getStatusInfo(situacao: number) {
 function Variacao({
     valor,
     mostrarComparacao,
+    textoComparacao,
 }: {
     valor: number;
     mostrarComparacao: boolean;
+    textoComparacao: string;
 }) {
     if (!mostrarComparacao) {
         return null;
@@ -54,7 +62,7 @@ function Variacao({
             </span>
 
             <span className="variation-label">
-                vs mês anterior
+                {textoComparacao}
             </span>
         </div>
     );
@@ -62,6 +70,8 @@ function Variacao({
 
 
 export default function PedidosPage() {
+    const usuarioLogado = getLoggedUser();
+    const storeId = usuarioLogado?.storeId;
     const [pedidos, setPedidos] = useState<Order[]>([]);
     const [pedidosFiltrados, setPedidosFiltrados] = useState<Order[]>([]);
     const [clientes, setClientes] = useState<Client[]>([]);
@@ -71,24 +81,16 @@ export default function PedidosPage() {
     const [paginaApiAtual, setPaginaApiAtual] = useState(1);
     const [totalPedidos, setTotalPedidos] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(1);
+    const router = useRouter();
+    const [carregandoNovoPedido, setCarregandoNovoPedido] = useState(false);
+    const [metricas, setMetricas] = useState({
+        totalOrders: 0,
+        billing: 0,
+        averageTicket: 0,
+        openOrders: 0,
+    });
+    const [carregandoMetricas, setCarregandoMetricas] = useState(false);
 
-    useEffect(() => {
-        Promise.all([
-            getOrders(1, ITENS_POR_PAGINA),
-            getClients()
-        ])
-            .then(([pedidosData, clientesData]) => {
-                setPedidos(pedidosData.pedidos);
-                setPedidosFiltrados(pedidosData.pedidos);
-                setClientes(clientesData);
-
-                setTotalPedidos(pedidosData.totalCount);
-                setPaginaApiAtual(1);
-                setTotalPaginas(Math.ceil(pedidosData.totalCount / ITENS_POR_PAGINA));
-            })
-            .catch(() => setErro("Não foi possível carregar os pedidos."))
-            .finally(() => setCarregando(false));
-    }, []);
 
     const faturamento = pedidos.reduce((soma, p) => soma + p.VEN_TOTALLIQUIDO, 0);
     const ticketMedio = totalPedidos > 0 ? faturamento / totalPedidos : 0;
@@ -99,6 +101,8 @@ export default function PedidosPage() {
     const [filtroDataInicio, setFiltroDataInicio] = useState("");
     const [filtroDataFim, setFiltroDataFim] = useState("");
     const [filtroAtivo, setFiltroAtivo] = useState(false);
+    const [filtrando, setFiltrando] = useState(false);
+    const [limpandoFiltro, setLimpandoFiltro] = useState(false);
 
     const totalPaginasFiltro = Math.max(1, Math.ceil(pedidosFiltrados.length / ITENS_POR_PAGINA));
     const inicio = filtroAtivo ? (paginaAtual - 1) * ITENS_POR_PAGINA : ((paginaAtual - 1) % (PEDIDOS_POR_CARGA / ITENS_POR_PAGINA)) * ITENS_POR_PAGINA;
@@ -176,37 +180,127 @@ export default function PedidosPage() {
         pedidosEmAbertoAnterior
     );
     function filtrarPedidos() {
-        let filtrados = pedidos;
-        if (filtroCliente) {
-            filtrados = filtrados.filter((p) => p.CLI_CODIGO === Number(filtroCliente));
+        setErro("");
+
+        // =====================================================
+        // 1. VALIDAÇÃO DO PERÍODO DE DATAS
+        // =====================================================
+
+        if (filtroDataInicio && filtroDataFim) {
+            const dataInicio = new Date(`${filtroDataInicio}T00:00:00`);
+            const dataFim = new Date(`${filtroDataFim}T00:00:00`);
+
+            // Data inicial maior que a final
+            if (dataInicio > dataFim) {
+                setErro("A data inicial não pode ser maior que a data final.");
+                return;
+            }
+
+            // Diferença em dias, considerando as duas datas
+            const diferencaDias =
+                Math.floor(
+                    (dataFim.getTime() - dataInicio.getTime()) /
+                        (1000 * 60 * 60 * 24)
+                ) + 1;
+
+            // Limite máximo de 7 dias
+            if (diferencaDias > 7) {
+                setErro("O período máximo para pesquisa é de 7 dias.");
+                return;
+            }
         }
-        if (filtroStatus) {
-            filtrados = filtrados.filter((p) => p.SIT_CODIGO === Number(filtroStatus));
-        }
-        if (filtroVendedor) {
-            filtrados = filtrados.filter((p) => p.FUN_NOME === filtroVendedor);
-        }
-        if (filtroDataInicio || filtroDataFim) {
-            filtrados = filtrados.filter((p) => {
-            const dataPedido = p.VEN_DATA.substring(0, 10);
-                if (filtroDataInicio && dataPedido < filtroDataInicio) {
-                    return false;
-                }
-                if (filtroDataFim && dataPedido > filtroDataFim) {
-                    return false;
-                }
-                return true;
-            });
-        }
+
+        // =====================================================
+        // 2. FILTRO DOS PEDIDOS
+        // =====================================================
+
+        const filtrados = pedidos.filter((pedido) => {
+            // ---------------------------------------------
+            // Loja
+            // ---------------------------------------------
+            const pertenceALoja =
+                storeId === undefined ||
+                pedido.LOJ_CODIGO === storeId;
+
+            if (!pertenceALoja) {
+                return false;
+            }
+
+            // ---------------------------------------------
+            // Cliente
+            // ---------------------------------------------
+            const correspondeCliente =
+                !filtroCliente ||
+                pedido.CLI_CODIGO === Number(filtroCliente);
+
+            // ---------------------------------------------
+            // Status
+            // ---------------------------------------------
+            const correspondeStatus =
+                !filtroStatus ||
+                pedido.SIT_CODIGO === Number(filtroStatus);
+
+            // ---------------------------------------------
+            // Vendedor
+            // ---------------------------------------------
+            const correspondeVendedor =
+                !filtroVendedor ||
+                pedido.FUN_CODIGO === Number(filtroVendedor);
+
+            // ---------------------------------------------
+            // Data inicial
+            // ---------------------------------------------
+            const dataPedido = pedido.VEN_DATA
+                ? pedido.VEN_DATA.substring(0, 10)
+                : "";
+
+            const correspondeDataInicio =
+                !filtroDataInicio ||
+                dataPedido >= filtroDataInicio;
+
+            // ---------------------------------------------
+            // Data final
+            // ---------------------------------------------
+            const correspondeDataFim =
+                !filtroDataFim ||
+                dataPedido <= filtroDataFim;
+
+            return (
+                correspondeCliente &&
+                correspondeStatus &&
+                correspondeVendedor &&
+                correspondeDataInicio &&
+                correspondeDataFim
+            );
+        });
+
+        // =====================================================
+        // 3. ATUALIZA A TABELA
+        // =====================================================
+
         setPedidosFiltrados(filtrados);
         setPaginaAtual(1);
-        setFiltroAtivo(
-            filtroCliente !== "" ||
-            filtroStatus !== "" ||
-            filtroVendedor !== "" ||
-            filtroDataInicio !== "" ||
-            filtroDataFim !== ""
-        );
+
+        // Verifica se existe algum filtro ativo
+        const existeFiltro =
+            Boolean(filtroCliente) ||
+            Boolean(filtroStatus) ||
+            Boolean(filtroVendedor) ||
+            Boolean(filtroDataInicio) ||
+            Boolean(filtroDataFim);
+
+        setFiltroAtivo(existeFiltro);
+
+        // =====================================================
+        // 4. CARREGA AS MÉTRICAS DO PERÍODO
+        // =====================================================
+
+        if (filtroDataInicio && filtroDataFim) {
+            carregarMetricas(
+                filtroDataInicio,
+                filtroDataFim
+            );
+        }
     }
     async function carregarPagina(pagina: number) {
         try {
@@ -231,33 +325,76 @@ export default function PedidosPage() {
             setCarregando(false);
         }
     }
-    function limparFiltros() {
-        setFiltroCliente("");
-        setFiltroStatus("");
-        setFiltroVendedor("");
-        setFiltroDataInicio("");
-        setFiltroDataFim("");
+    async function limparFiltros() {
+        try {
+            setLimpandoFiltro(true);
+            setErro("");
 
-        Promise.all([
-            getOrders(1, PEDIDOS_POR_CARGA),
-            getClients()
-        ]).then(([pedidosData, clientesData]) => {
-            setPedidos(pedidosData.pedidos);
-            setPedidosFiltrados(pedidosData.pedidos);
+            // Limpa os campos dos filtros
+            setFiltroCliente("");
+            setFiltroStatus("");
+            setFiltroVendedor("");
+            setFiltroDataInicio("");
+            setFiltroDataFim("");
+
+            // Volta para a primeira página
+            setPaginaAtual(1);
+            setPaginaApiAtual(1);
+            setFiltroAtivo(false);
+
+            // Período padrão dos cards: últimos 30 dias
+            const periodoMetricas = obterPeriodoMetricas();
+
+            // Recarrega pedidos, clientes e métricas
+            const [pedidosData, clientesData, metricasData] =
+                await Promise.all([
+                    getOrders(1, PEDIDOS_POR_CARGA),
+                    getClients(),
+                    getOrderMetricsPeriodo(
+                        periodoMetricas.inicio,
+                        periodoMetricas.fim,
+                        storeId
+                    ),
+                ]);
+
+            // Mantém somente os pedidos da loja logada
+            const pedidosDaLoja = pedidosData.pedidos.filter(
+                (pedido) =>
+                    storeId === undefined ||
+                    pedido.LOJ_CODIGO === storeId
+            );
+
+            setPedidos(pedidosDaLoja);
+            setPedidosFiltrados(pedidosDaLoja);
             setClientes(clientesData);
 
             setTotalPedidos(pedidosData.totalCount);
 
             setTotalPaginas(
-                Math.ceil(
-                    pedidosData.totalCount / ITENS_POR_PAGINA
+                Math.max(
+                    1,
+                    Math.ceil(
+                        pedidosData.totalCount / ITENS_POR_PAGINA
+                    )
                 )
             );
-
+            
             setPaginaApiAtual(1);
-            setPaginaAtual(1);
-            setFiltroAtivo(false);
-        });
+            // IMPORTANTE:
+            // Atualiza os cards para os últimos 30 dias
+            setMetricas(metricasData);
+        } catch (error) {
+            console.error(
+                "ERRO AO LIMPAR FILTROS:",
+                error
+            );
+
+            setErro(
+                "Não foi possível limpar os filtros."
+            );
+        } finally {
+            setLimpandoFiltro(false);
+        }
     }
     function gerarPaginas() {
         const paginas: (number | string)[] = [];
@@ -324,7 +461,100 @@ export default function PedidosPage() {
             fim: fimAnterior,
         };
     }
+    async function carregarMetricas(dataInicio: string, dataFim: string) {
+        try {
+            setCarregandoMetricas(true);
 
+            console.log("STORE ID:", storeId);
+            console.log("DATA INÍCIO:", dataInicio);
+            console.log("DATA FIM:", dataFim);
+
+            const resposta = await getOrderMetricsPeriodo(
+                dataInicio,
+                dataFim,
+                storeId
+            );
+
+            setMetricas(resposta);
+        } catch (error) {
+            console.error("ERRO AO CARREGAR AS MÉTRICAS: ", error);
+
+            setMetricas({
+                totalOrders: 0,
+                billing: 0,
+                averageTicket: 0,
+                openOrders: 0,
+            });
+        } finally {
+            setCarregandoMetricas(false);
+        }
+    }
+
+    function formatarData(data: Date) {
+        const ano = data.getFullYear();
+        const mes = String(data.getMonth() + 1).padStart(2, "0");
+        const dia = String(data.getDate()).padStart(2, "0");
+
+        return `${ano}-${mes}-${dia}`;
+    }
+
+    function obterPeriodoMetricas() {
+        const hoje = new Date();
+
+        const fim = new Date(hoje);
+
+        const inicio = new Date(hoje);
+        inicio.setDate(inicio.getDate() - 29);
+
+        return {
+            inicio: formatarData(inicio),
+            fim: formatarData(fim),
+        };
+    }
+    const textoComparacao = filtroDataInicio && filtroDataFim ? filtroDataInicio.substring(0, 7) === filtroDataFim.substring(0, 7) ? "vs mês anterior" : "vs período anterior" : "";
+
+    useEffect(() => {
+        const periodoMetricas = obterPeriodoMetricas();
+
+        Promise.all([
+            getOrders(1, PEDIDOS_POR_CARGA),
+            getClients(),
+            getOrderMetricsPeriodo(
+                periodoMetricas.inicio,
+                periodoMetricas.fim,
+                storeId
+            ),
+        ])
+            .then(([pedidosData, clientesData, metricasData]) => {
+                const pedidosDaLoja = pedidosData.pedidos.filter(
+                    (pedido) => pedido.LOJ_CODIGO === storeId
+                );
+
+                setPedidos(pedidosDaLoja);
+                setPedidosFiltrados(pedidosDaLoja);
+
+                setClientes(clientesData);
+
+                setTotalPedidos(pedidosData.totalCount);
+
+                setPaginaApiAtual(1);
+
+                setTotalPaginas(
+                    Math.ceil(
+                        pedidosData.totalCount / ITENS_POR_PAGINA
+                    )
+                );
+
+                setMetricas(metricasData);
+            })
+            .catch((error) => {
+                console.error("ERRO AO CARREGAR PEDIDOS:", error);
+                setErro("Não foi possível carregar os pedidos.");
+            })
+            .finally(() => {
+                setCarregando(false);
+            });
+    }, [storeId]);
     return (
         <div className="pedidos-page">
             <div className="breadcrumb">
@@ -338,41 +568,69 @@ export default function PedidosPage() {
                     <h1>Pedidos de Venda</h1>
                     <p>Gerencie seus pedidos, acompanhe o status e faça novas vendas.</p>
                 </div>
-                <Link href="/novo-pedido" className="novo-pedido">+ Novo Pedido</Link>
+                <button
+                    className="novo-pedido"
+                    onClick={() => {
+                        setCarregandoNovoPedido(true);
+
+                        setTimeout(() => {
+                            router.push("/novo-pedido");
+                        }, 800);
+                    }}
+                    disabled={carregandoNovoPedido}
+                >
+                    {carregandoNovoPedido ? "Carregando..." : "+ Novo Pedido"}
+                </button>
             </div>
 
             <div className="summary-cards">
                 <div className="summary-card">
-                    <span>Pedidos no Mês</span>
-                    <strong>{totalPedidosAtual}</strong>
-                    <Variacao
-                        valor={variacaoPedidos}
-                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
-                    />
+                    <div className="icon-card"><Icon path={mdiFileDocumentOutline} size={1} /></div>
+                    <div>
+                        <span>{filtroAtivo ? "Pedidos da Semana" : "Pedidos dos Últimos 30 dias"}</span>
+                        <strong>{carregandoMetricas ? "..." : metricas.totalOrders}</strong>
+                        <Variacao
+                            valor={variacaoPedidos}
+                            mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                            textoComparacao={textoComparacao}
+                        />
+                    </div>
                 </div>
                 <div className="summary-card">
-                    <span>Faturamento (R$)</span>
-                    <strong>{faturamentoAtual.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
-                    <Variacao
-                        valor={variacaoFaturamento}
-                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
-                    />
+                    <div className="icon-card"><Icon path={mdiCurrencyUsd} size={1} /></div>
+                    <div>
+                        <span>Faturamento</span>
+                        <strong>{carregandoMetricas ? "..." : `R$ ${metricas.billing.toLocaleString("pt-br", {minimumFractionDigits: 2,})}`}</strong>
+                        <Variacao
+                            valor={variacaoFaturamento}
+                            mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                            textoComparacao={textoComparacao}
+                        />
+                    </div>
                 </div>
                 <div className="summary-card">
-                    <span>Ticket Médio</span>
-                    <strong>R$ {ticketMedioAtual.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
-                    <Variacao
-                        valor={variacaoTicket}
-                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
-                    />
+                    <div className="icon-card"><Icon path={mdiFinance} size={1} /></div>
+                    <div>
+                        <span>Ticket Médio</span>
+                        <strong>{carregandoMetricas ? "..." : `R$ ${metricas.averageTicket.toLocaleString("pt-br", {minimumFractionDigits: 2,})}`}</strong>
+                        <Variacao
+                            valor={variacaoTicket}
+                            mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                            textoComparacao={textoComparacao}
+                        />
+                    </div>
                 </div>
                 <div className="summary-card">
-                    <span>Pedidos em Aberto</span>
-                    <strong>{pedidosEmAbertoAtual}</strong>
-                    <Variacao
-                        valor={variacaoAbertos}
-                        mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
-                    />
+                    <div className="icon-aberto"><Icon path={mdiClockTimeThreeOutline} size={1} /></div>
+                    <div>
+                        <span>Pedidos em Aberto</span>
+                        <strong>{carregandoMetricas ? "..." : metricas.openOrders}</strong>
+                        <Variacao
+                            valor={variacaoAbertos}
+                            mostrarComparacao={!!filtroDataInicio && !!filtroDataFim}
+                            textoComparacao={textoComparacao}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -408,55 +666,86 @@ export default function PedidosPage() {
                     <label>Vendedor</label>
                     <select value={filtroVendedor} onChange={(e) => setFiltroVendedor(e.target.value)}>
                     <option value="">Todos</option>
-                    {[...new Set(pedidos.map((p) => p.FUN_NOME))].map((v) => (
-                        <option key={v} value={v}>{v}</option>
+                    {[...new Map(pedidos.map((p) => [p.FUN_CODIGO, p.FUN_NOME,])).entries(), ].map(([codigo, nome]) => (
+                        <option key={codigo} value={codigo}>{nome}</option>
                     ))}
                     </select>
                 </div>
-                <button className="filter-button" onClick={filtrarPedidos}>Filtrar</button>
+                <button className="filter-button" onClick={filtrarPedidos} disabled={filtrando}>
+                    {filtrando ? (
+                        <>
+                            <span className="button-spinner"></span>
+                            Filtrando...
+                        </>
+                    ) : (
+                        "Filtrar"
+                    )}
+                </button>
                 <button className="clear-button" onClick={limparFiltros}>Limpar filtros</button>
             </section>
             <section className="table-card">
-                <div className="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nº Pedido</th>
-                                <th>Data</th>
-                                <th>Cliente</th>
-                                <th>Vendedor</th>
-                                <th>Valor (R$)</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {carregando && <tr><td colSpan={7}>Carregando pedidos...</td></tr>}
-                            {!carregando && erro && <tr><td colSpan={7}>{erro}</td></tr>}
-                            {!carregando && !erro && pedidosDaPagina.length === 0 && (
-                                <tr><td colSpan={7}>Nenhum pedido encontrado.</td></tr>
+                {carregando ? (
+                    <div className="tabela-loading">
+                        <div className="loading-spinner"></div>
+                        <span>Carregando pedidos...</span>
+                    </div>
+                    ): (
+                        <div className="table-responsive tabela-wrapper">
+                            {(filtrando || limpandoFiltro) && (
+                                <div className="tabela-filtro-loading">
+                                    <div className="loading-spinner"></div>
+                                    <span>{limpandoFiltro ? "Limpando Filtros..." : "Filtrando Pedidos..."}</span>
+                                </div>
                             )}
-
-                            {!carregando && !erro && pedidosDaPagina.map((pedido) => {
-                                const statusInfo = getStatusInfo(pedido.SIT_CODIGO);
-
-                                return (
-                                    <tr key={pedido.VEN_NUMERO}>
-                                        <td>{pedido.VEN_NUMSITE}</td>
-                                        <td>{new Date(pedido.VEN_DATA).toLocaleDateString("pt-BR")}</td>
-                                        <td>{pedido.CLI_NOME}</td>
-                                        <td>{pedido.FUN_NOME}</td>
-                                        <td>{pedido.VEN_TOTALLIQUIDO.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                        <td><span className={`status ${statusInfo.className}`}>{statusInfo.label}</span></td>
-                                        <td>•••</td>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nº Pedido</th>
+                                        <th>Data</th>
+                                        <th>Cliente</th>
+                                        <th>Vendedor</th>
+                                        <th>Valor (R$)</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
                                     </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                                </thead>
 
+                                <tbody>
+                                    {carregando && <tr><td colSpan={7}>Carregando pedidos...</td></tr>}
+                                    {!carregando && erro && <tr><td colSpan={7}>{erro}</td></tr>}
+                                    {!carregando && !erro && pedidosDaPagina.length === 0 && (
+                                        <tr><td colSpan={7}>Nenhum pedido encontrado.</td></tr>
+                                    )}
+
+                                    {!carregando && !erro && pedidosDaPagina.map((pedido) => {
+                                        const statusInfo = getStatusInfo(pedido.SIT_CODIGO);
+
+                                        return (
+                                            <tr key={pedido.VEN_NUMERO}>
+                                                <td>{pedido.VEN_NUMERO}</td>
+                                                <td>{new Date(pedido.VEN_DATA).toLocaleDateString("pt-BR")}</td>
+                                                <td>{pedido.CLI_NOME}</td>
+                                                <td>{pedido.FUN_NOME}</td>
+                                                <td>{pedido.VEN_TOTALLIQUIDO.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                                <td><span className={`status ${statusInfo.className}`}>{statusInfo.label}</span></td>
+                                                <td className="acoes-pedidos">
+                                                    <button
+                                                        type="button"
+                                                        className="btn-acoes-pedido"
+                                                        onClick={() => router.push(`/pedidos/${pedido.VEN_NUMERO}`)}
+                                                        aria-label={`Visualizar pedido ${pedido.VEN_NUMERO}`}
+                                                        title="Visualizar pedido"
+                                                    >
+                                                        <FontAwesomeIcon icon={faEye} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 <div className="table-footer">
                     <span>
                         Mostrando{" "}

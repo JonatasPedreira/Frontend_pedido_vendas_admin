@@ -1,15 +1,21 @@
 .app-layout {
     min-height: 100vh;
-    background: #f5f7fa;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .app-body {
     min-height: 100vh;
+    background: var(--bg-secondary);
 }
 
 .main-layout {
     width: 100%;
     min-height: 100vh;
+    background: var(--bg-secondary);
 }
 
 .main-content {
@@ -17,7 +23,11 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: margin-left 0.3s ease, width 0.3s ease;
+
+    transition:
+        margin-left 0.3s ease,
+        width 0.3s ease,
+        background-color 0.2s ease;
 }
 
 .main-content.sidebar-open {
@@ -36,7 +46,18 @@
     min-width: 0;
     padding: 20px;
     box-sizing: border-box;
+
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
 
 @media (max-width: 800px) {
     .page-content {

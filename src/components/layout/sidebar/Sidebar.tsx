@@ -15,6 +15,7 @@ import {
     faGear,
     faAngleUp,
     faAngleDown,
+    faDatabase,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@/styles/layout/Sidebar.css";
@@ -68,7 +69,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                 <div className="logo">
                     <div className="logo-icon">
-                        ◇
+                        <FontAwesomeIcon icon={faDatabase} />
                     </div>
 
                     <div>
@@ -136,23 +137,23 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         </div>
                             <ul className={`submenu ${isComprasOpen ? "open" : ""}`}>
                             <li>
-                                <Link href="#">Pedidos de Venda</Link>
+                                <Link href="#">############</Link>
                             </li>
 
                             <li>
-                                <Link href="#">Orçamentos</Link>
+                                <Link href="#">############</Link>
                             </li>
 
                             <li>
-                                <Link href="#">Clientes</Link>
+                                <Link href="#">############</Link>
                             </li>
 
                             <li>
-                                <Link href="#">Cond. de Pagamento</Link>
+                                <Link href="#">############</Link>
                             </li>
 
                             <li>
-                                <Link href="#">Tabelas de Preço</Link>
+                                <Link href="#">############</Link>
                             </li>
                         </ul>
 

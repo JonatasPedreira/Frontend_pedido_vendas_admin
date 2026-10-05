@@ -45,9 +45,8 @@ api.interceptors.response.use(
                 }
             } catch (refreshError) {
                 // Se falhar o refresh (ex: refresh token expirado também), desloga
-                await logout();
                 if (typeof window !== "undefined") {
-                    window.location.href = "/login";
+                    window.dispatchEvent(new Event("session-expired"));
                 }
                 return Promise.reject(refreshError);
             }

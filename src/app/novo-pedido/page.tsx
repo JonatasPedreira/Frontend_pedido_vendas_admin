@@ -4,7 +4,7 @@ import Link from "next/link";
 import "@/styles/novo-pedido.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping, faFileLines, faMagnifyingGlass, faPercent, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { getClients, Client } from "@/app/lib/clients";
+import { getClients, getClientById, Client } from "@/app/lib/clients";
 import { getProducts, Product } from "@/app/lib/products";
 import { getLoggedUser } from "@/app/lib/auth";
 import { createOrder, getOrders } from "../lib/orders";
@@ -18,13 +18,14 @@ interface ItemPedido {
     descricao: string;
     unidade: string;
     estoque: number;
-    quantidade: number;
-    preco: number;
-    desconto: number;
+    quantidade: number | "";
+    preco: number | "";
+    desconto: number | "";
 }
 
 export default function NovoPedidoPage() {
     const usuario = getLoggedUser();
+    const { user } = useAuth();
 
     // --- dados do cabeçalho ---
     const [clienteQuery, setClienteQuery] = useState("");
@@ -38,8 +39,7 @@ export default function NovoPedidoPage() {
     const [tipoFrete, setTipoFrete] = useState("");
     const [observacoesCabecalho, setObservacoesCabecalho] = useState("");
     const [observacoesPedido, setObservacoesPedido] = useState("");
-    const [vendedor, setVendedor] = useState<number | "">("");
-    const [vendedores, setVendedores] = useState<{ codigo: number; nome: string }[]>([]);
+    const vendedor = user?.funCodigo ?? "";
     const [importando, setImportando] = useState(false);
     const arquivoInputRef = useRef<HTMLInputElement>(null);
     const [resumoImportacao, setResumoImportacao] = useState<string | null>(null);
@@ -50,8 +50,9 @@ export default function NovoPedidoPage() {
     const [formasPagamento, setFormasPagamento] = useState<PaymentMethod[]>([]);
     const [finalizando, setFinalizando] = useState(false);
     const [erroFinalizar, setErroFinalizar] = useState("");
+    const [modalCancelar, setModalCancelar] = useState(false);
+    const [modalFinalizar, setModalFinalizar] = useState(false);
     const router = useRouter();
-    const { user } = useAuth();
 
     function abrirSeletorArquivo() {
         arquivoInputRef.current?.click();
@@ -170,9 +171,17 @@ export default function NovoPedidoPage() {
     return () => clearTimeout(timer);
     }, [clienteQuery]);
     
+    async function selecionarCliente(cliente: Client) {
+        try {
+            const clienteCompleto = await getClientById(cliente.CLI_CODIGO);
 
-    function selecionarCliente(cliente: Client) {
-        setClienteSelecionado(cliente);
+            setClienteSelecionado(clienteCompleto);
+        } catch (error){
+            console.error("ERRO AO BUSCAR CLIENTE:", error);
+
+            setClienteSelecionado(cliente);
+        }
+
         setClienteQuery("");
         setResultadosCliente([]);
     }
@@ -247,7 +256,7 @@ export default function NovoPedidoPage() {
         getPaymentMethods().then(setFormasPagamento).catch(() => setFormasPagamento([]));
     }, []);
 
-    function atualizarItem(id: number, campo: "quantidade" | "preco" | "desconto", valor: number) {
+    function atualizarItem(id: number, campo: "quantidade" | "preco" | "desconto", valor: number | "") {
         setItens((atuais) => atuais.map((item) => (item.id === id ? { ...item, [campo]: valor } : item)));
     }
 
@@ -260,14 +269,15 @@ export default function NovoPedidoPage() {
     }
 
     function calcularTotalItem(item: ItemPedido) {
-        const subtotal = item.quantidade * item.preco;
-        return subtotal - subtotal * (item.desconto / 100);
+        const quantidade = Number(item.quantidade || 0);
+        const preco = Number(item.preco || 0)
+        const desconto = Number(item.desconto || 0);
+        const subtotal = quantidade * preco;
+        return subtotal - subtotal * (desconto / 100);
     }
     function handleIncluir() {
         if (resultadosProduto.length === 1) {
             incluirProduto(resultadosProduto[0]);
-        } else if (resultadosProduto.length > 1) {
-            // já está mostrando a lista, não faz nada — usuário clica no item certo
         }
     }
     function validarPedido() {
@@ -280,31 +290,45 @@ export default function NovoPedidoPage() {
         return null;
     }
     function handleCancelar() {
-        const temDadosPreenchidos = clienteSelecionado || itens.length > 0 || observacoesPedido.trim() !== "";
+        const temDadosPreenchidos =
+            clienteSelecionado ||
+            itens.length > 0 ||
+            observacoesPedido.trim() !== "";
 
         if (temDadosPreenchidos) {
-            const confirmar = window.confirm("Tem certeza que deseja cancelar? Os dados preenchidos serão perdidos.");
-            if (!confirmar) return;
+            setModalCancelar(true);
+            return;
         }
 
         router.push("/pedidos");
     }
 
-    async function handleFinalizar() {
+    function handleFinalizar() {
         const erroValidacao = validarPedido();
+
         if (erroValidacao) {
             setErroFinalizar(erroValidacao);
             return;
         }
 
         setErroFinalizar("");
+        setModalFinalizar(true);
+    }
+    async function confirmarFinalizacao() {
+        setModalFinalizar(false);
         setFinalizando(true);
 
-        const formaSelecionada = formasPagamento.find((f) => f.FPG_CODIGO === formaPagamento);
-        const horaAtual = new Date().toTimeString().slice(0, 8);
+        const formaSelecionada = formasPagamento.find(
+            (f) => f.FPG_CODIGO === formaPagamento
+        );
 
+        const horaAtual = new Date().toTimeString().slice(0, 8);
+        console.log("ITENS DO PEDIDO:", itens);
+        console.log("PREÇO:", itens[0]?.preco);
+        console.log("DESCONTO DO ITEM:", itens[0]?.desconto);
+        console.log("DESCONTO TOTAL:", descontoTotal);
         const payload = {
-            id: 0, // backend deve gerar o número real do pedido
+            id: 0,
             client_id: clienteSelecionado!.CLI_CODIGO,
             provider_id: 0,
             employee_id: Number(vendedor),
@@ -317,7 +341,7 @@ export default function NovoPedidoPage() {
             discount: descontoTotal,
             store_note: observacoesPedido,
             payment_method_rate: 0,
-            installment: 1, // ⚠️ ajuste conforme a regra real de parcelas da sua condição de pagamento
+            installment: 1,
             payment_method: formaSelecionada?.FPG_DESCRICAO ?? "",
             payment_plan_code: Number(condicaoPagamento),
             payment_date: prevFaturamento || dataPedido,
@@ -330,12 +354,15 @@ export default function NovoPedidoPage() {
                 variant_id: 0,
             })),
         };
-
+        console.log("PAYLOAD ENVIADO:", payload);
         try {
-            await createOrder(payload);
+            const resposta = await createOrder(payload);
+            console.log("RESPOSTA DA API AO CRIAR PEDIDO:", resposta);
             router.push("/pedidos");
         } catch {
-            setErroFinalizar("Não foi possível finalizar o pedido. Tente novamente.");
+            setErroFinalizar(
+                "Não foi possível finalizar o pedido. Tente novamente."
+            );
         } finally {
             setFinalizando(false);
         }
@@ -345,8 +372,8 @@ export default function NovoPedidoPage() {
     const [frete, setFrete] = useState(0);
     const [outrasDespesas, setOutrasDespesas] = useState(0);
 
-    const subtotal = itens.reduce((soma, item) => soma + item.quantidade * item.preco, 0);
-    const descontoTotal = itens.reduce((soma, item) => soma + item.quantidade * item.preco * (item.desconto / 100), 0);
+    const subtotal = itens.reduce((soma, item) => soma + Number(item.quantidade || 0) * Number(item.preco || 0), 0);
+    const descontoTotal = itens.reduce((soma, item) => soma + Number(item.quantidade || 0) * Number(item.preco || 0) * (Number(item.desconto || 0) / 100), 0);
     const totalPedido = subtotal - descontoTotal + frete + outrasDespesas;
 
     return (
@@ -380,13 +407,21 @@ export default function NovoPedidoPage() {
                                     setClienteSelecionado(null);
                                     setClienteQuery(e.target.value);
                                 }}
+                                onBlur={() => {
+                                    setTimeout(() => {
+                                        setResultadosCliente([]);
+                                    }, 150);
+                                }}
                             />
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
 
                             {resultadosCliente.length > 0 && (
                                 <ul className="cliente-resultados">
                                     {resultadosCliente.map((c) => (
-                                        <li key={c.CLI_CODIGO} onClick={() => selecionarCliente(c)}>
+                                        <li key={c.CLI_CODIGO} onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            selecionarCliente(c);
+                                        }}>
                                             {c.CLI_CODIGO} - {c.CLI_NOME}
                                         </li>
                                     ))}
@@ -396,11 +431,13 @@ export default function NovoPedidoPage() {
 
                         {clienteSelecionado && (
                             <div className="cliente-info-card">
-                                <span>CNPJ: —</span>
-                                <span>IE: —</span>
-                                <span>Endereço: {clienteSelecionado.CLI_ENDERECO}</span>
-                                <span>Limite de Crédito: —</span>
-                                <span>Saldo: —</span>
+                                <span>CPF/CNPJ: {clienteSelecionado.CLI_CPF_CNPJ || "-"}</span>
+                                <span>Indentidade: {clienteSelecionado.CLI_IDENTIDADE || "-"}</span>
+                                <span>Endereço: {clienteSelecionado.CLI_ENDERECO || "-"}</span>
+                                <span>CEP: {clienteSelecionado.CLI_CEP || "-"}</span>
+                                <span>UF: {clienteSelecionado.CLI_UF || "-"}</span>
+                                <span>Telefone: {clienteSelecionado.CLI_FONE || "-"}</span>
+                                <span>E-mail: {clienteSelecionado.CLI_EMAIL || "-"}</span>
                             </div>
                         )}
                     </div>
@@ -497,18 +534,30 @@ export default function NovoPedidoPage() {
                         type="text"
                         placeholder="Digite o código, descrição ou utilize o leitor de código de barras..."
                         value={produtoQuery}
-                        onChange={(e) => setProdutoQuery(e.target.value)}
+                        onChange={(e) => {
+                            const valor = e.target.value;
+                            setProdutoQuery(valor);
+
+                            if (!valor.trim()) {
+                                setResultadosProduto([]);
+                            }
+                        }}
+                        onBlur={() => {
+                            setTimeout(() => {
+                                setResultadosProduto([]);
+                            }, 150);
+                        }}
                         onKeyDown={(e) => e.key === "Enter" && handleIncluir()}
                     />
 
-                    <button type="button" tabIndex={-1}>
+                    <button type="button" tabIndex={-1} onClick={handleIncluir}>
                         <FontAwesomeIcon icon={faMagnifyingGlass} />
                     </button>
 
                     {resultadosProduto.length > 0 && (
                         <ul className="produto-resultados">
                             {resultadosProduto.map((p) => (
-                                <li key={p.PRO_CODIGO} onClick={() => incluirProduto(p)}>
+                                <li key={p.PRO_CODIGO} onMouseDown={(e) => {e.preventDefault(); incluirProduto(p);}}>
                                     {p.PRO_DESCRICAO} — R$ {p.PRECO.toFixed(2)} <FontAwesomeIcon icon={faCartShopping} />
                                 </li>
                             ))}
@@ -537,15 +586,15 @@ export default function NovoPedidoPage() {
                                     <td>{item.estoque}</td>
                                     <td>
                                         <input type="number" min="1" value={item.quantidade}
-                                            onChange={(e) => atualizarItem(item.id, "quantidade", Number(e.target.value))} />
+                                            onChange={(e) => atualizarItem(item.id, "quantidade", e.target.value === "" ? "" : Number(e.target.value))} />
                                     </td>
                                     <td>
                                         <input type="number" min="0" step="0.01" value={item.preco}
-                                            onChange={(e) => atualizarItem(item.id, "preco", Number(e.target.value))} />
+                                            onChange={(e) => atualizarItem(item.id, "preco", e.target.value === "" ? "" : Number(e.target.value))} />
                                     </td>
                                     <td>
                                         <input type="number" min="0" max="100" step="0.01" value={item.desconto}
-                                            onChange={(e) => atualizarItem(item.id, "desconto", Number(e.target.value))} />
+                                            onChange={(e) => atualizarItem(item.id, "desconto", e.target.value === "" ? "" : Number(e.target.value))} />
                                     </td>
                                     <td>R$ {calcularTotalItem(item).toFixed(2)}</td>
                                     <td>
@@ -633,7 +682,116 @@ export default function NovoPedidoPage() {
             </section>
 
             {erroFinalizar && <p className="erro-finalizar">{erroFinalizar}</p>}
+            {modalCancelar && (
+                <div className="modal-overlay">
+                    <div className="modal-confirmacao">
+                        <h2>Cancelar pedido?</h2>
 
+                        <p>
+                            Tem certeza que deseja cancelar o preenchimento deste pedido?
+                        </p>
+
+                        <p className="modal-aviso">
+                            Todos os dados preenchidos serão perdidos.
+                        </p>
+
+                        <div className="modal-acoes">
+                            <button
+                                type="button"
+                                className="modal-btn-voltar"
+                                onClick={() => setModalCancelar(false)}
+                            >
+                                Voltar
+                            </button>
+
+                            <button
+                                type="button"
+                                className="modal-btn-confirmar-cancelamento"
+                                onClick={() => {
+                                    setModalCancelar(false);
+                                    router.push("/pedidos");
+                                }}
+                            >
+                                Sim, cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {modalFinalizar && (
+                <div className="modal-overlay">
+                    <div className="modal-confirmacao modal-resumo">
+                        <h2>Confirmar pedido</h2>
+
+                        <p>
+                            Confira os dados abaixo antes de finalizar o pedido.
+                        </p>
+
+                        <div className="resumo-pedido">
+                            <div className="resumo-linha">
+                                <span>Cliente</span>
+                                <strong>
+                                    {clienteSelecionado?.CLI_NOME}
+                                </strong>
+                            </div>
+
+                            <div className="resumo-linha">
+                                <span>Vendedor</span>
+                                <strong>
+                                    {user?.name || "Usuário"}
+                                </strong>
+                            </div>
+
+                            <div className="resumo-linha">
+                                <span>Quantidade de produtos</span>
+                                <strong>
+                                    {itens.length}
+                                </strong>
+                            </div>
+
+                            <div className="resumo-linha">
+                                <span>Subtotal</span>
+                                <strong>
+                                    R$ {subtotal.toFixed(2)}
+                                </strong>
+                            </div>
+
+                            <div className="resumo-linha">
+                                <span>Desconto</span>
+                                <strong>
+                                    - R$ {descontoTotal.toFixed(2)}
+                                </strong>
+                            </div>
+
+                            <div className="resumo-linha resumo-total">
+                                <span>Total do pedido</span>
+                                <strong>
+                                    R$ {totalPedido.toFixed(2)}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className="modal-acoes">
+                            <button
+                                type="button"
+                                className="modal-btn-voltar"
+                                onClick={() => setModalFinalizar(false)}
+                            >
+                                Voltar
+                            </button>
+
+                            <button
+                                type="button"
+                                className="modal-btn-confirmar"
+                                onClick={confirmarFinalizacao}
+                            >
+                                Confirmar pedido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="novo-pedido-footer">
                 <button type="button" className="btn-cancelar" onClick={handleCancelar}>
                     Cancelar

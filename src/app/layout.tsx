@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import MainLayout from "@/components/layout/MainLayout";
 import { AuthProvider } from "./contexts/AuthContext"; // Ajuste o caminho se necessário
 import "./globals.css"; // Seus estilos globais
+import { ThemeProvider } from "./lib/theme/ThemeProvider";
 
 export const metadata: Metadata = {
     title: "Sistema de Vendas",
@@ -17,11 +18,13 @@ export default function RootLayout({
         <html lang="pt-BR">
             <body>
                 {/* O Provedor de Autenticação precisa envolver todo o layout */}
-                <AuthProvider>
-                    <MainLayout>
-                        {children}
-                    </MainLayout>
-                </AuthProvider>
+                <ThemeProvider>
+                    <AuthProvider>
+                        <MainLayout>
+                            {children}
+                        </MainLayout>
+                    </AuthProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

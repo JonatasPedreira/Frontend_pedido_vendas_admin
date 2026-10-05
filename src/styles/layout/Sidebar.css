@@ -1,20 +1,33 @@
+
+/* ========================================
+   SIDEBAR
+======================================== */
+
 .sidebar {
     position: fixed;
+
     top: 0;
     left: 0;
 
     width: 250px;
     height: 100vh;
 
-    background: #172333;
-    color: #fff;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
 
     z-index: 1200;
 
     overflow-y: auto;
 
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+
+    border-right: 1px solid var(--border-color);
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .sidebar.hidden {
@@ -25,37 +38,57 @@
     transform: translateX(0);
 }
 
+/* ========================================
+   ÁREA INTERNA
+======================================== */
+
 .side-sec {
     min-height: 100%;
+
     display: flex;
     flex-direction: column;
 }
 
+/* ========================================
+   LOGO
+======================================== */
+
 .logo {
     height: 64px;
+
     display: flex;
     align-items: center;
+
     gap: 10px;
+
     padding: 0 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-bottom: 1px solid var(--border-color);
+
+    flex-shrink: 0;
 }
 
 .logo-icon {
     font-size: 30px;
-    color: #28a9e0;
+    color: var(--primary-color);
 }
 
 .logo strong {
     font-size: 21px;
-    color: #fff;
+    color: #ffffff;
 }
 
 .logo strong span {
-    color: #168bd0;
+    color: var(--primary-color);
 }
+
+/* ========================================
+   MENU PRINCIPAL
+======================================== */
 
 .sidebar-menu {
     list-style: none;
+
     padding: 15px 0;
     margin: 0;
 }
@@ -64,70 +97,68 @@
     margin: 2px 0;
 }
 
+/* ========================================
+   LINKS PRINCIPAIS
+======================================== */
+
 .sidebar-menu a {
     display: flex;
     align-items: center;
+
     gap: 14px;
+
     min-height: 42px;
+
     padding: 0 22px;
-    color: #c6d0dc;
+
+    color: var(--sidebar-text);
+
     text-decoration: none;
+
     font-size: 14px;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .sidebar-menu a svg {
     width: 17px;
 }
 
+/* Hover */
+
 .sidebar-menu a:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
-}
-.menu-button {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 0 22px;
-    min-height: 42px;
-
-    border: none;
-    background: transparent;
-    color: #c6d0dc;
-
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
+    background: var(--sidebar-hover);
+    color: #ffffff;
 }
 
-.menu-button:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
+/* Link ativo */
+
+.sidebar-menu a.active {
+    background: var(--sidebar-active);
+    color: #ffffff;
 }
 
-.menu-button svg {
-    width: 17px;
-}
-.menu-button svg:last-child {
-    margin-left: auto;
-    width: 12px;
-    transition: transform 0.3s ease;
+/* ========================================
+   GRUPOS
+======================================== */
+
+.menu-group {
+    position: relative;
 }
 
-.menu-group.active > .menu-title {
-    background: #0879d1;
-}
-.sidebar-menu a.active,
-.submenu a.active {
-    background: #0879d1;
-    color: #fff;
-}
+/* ========================================
+   TÍTULO DO GRUPO
+======================================== */
 
 .menu-title {
     display: flex;
     align-items: center;
+
     justify-content: space-between;
-    color: #fff;
+
+    color: #ffffff;
 }
 
 .menu-title > a {
@@ -139,43 +170,149 @@
     margin-right: 18px;
 }
 
+/* ========================================
+   BOTÃO DO GRUPO
+======================================== */
+
+.menu-button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 0 22px;
+
+    min-height: 42px;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--sidebar-text);
+
+    font-size: 14px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.menu-button:hover {
+    background: var(--sidebar-hover);
+    color: #ffffff;
+}
+
+.menu-button svg {
+    width: 17px;
+}
+
+.menu-button svg:last-child {
+    margin-left: auto;
+
+    width: 12px;
+
+    transition: transform 0.3s ease;
+}
+
+/* ========================================
+   GRUPO ATIVO
+======================================== */
+
+.menu-group.active > .menu-title {
+    background: var(--sidebar-active);
+}
+
+.menu-group.active > .menu-title .menu-button {
+    color: #ffffff;
+}
+
+/* ========================================
+   SUBMENU
+======================================== */
+
 .submenu {
     list-style: none;
+
     padding: 0;
     margin: 0;
-    background: #172333;
+
+    background: var(--sidebar-bg);
+
     max-height: 0;
+
     overflow: hidden;
-    transition: max-height 0.3s ease;
+
+    transition:
+        max-height 0.3s ease,
+        background-color 0.2s ease;
 }
 
 .submenu.open {
     max-height: 300px;
 }
+
 .submenu a {
     padding-left: 44px;
+
     min-height: 36px;
+
     font-size: 13px;
+
     border-radius: 15px;
 }
 
+/* Submenu hover */
+
+.submenu a:hover {
+    background: var(--sidebar-hover);
+}
+
+/* Submenu ativo */
+
+.submenu a.active {
+    background: var(--sidebar-active);
+    color: #ffffff;
+}
+
+/* ========================================
+   EMPRESA
+======================================== */
+
 .sidebar-company {
     margin-top: auto;
+
     padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-top: 1px solid var(--border-color);
+
     display: flex;
     flex-direction: column;
+
     gap: 4px;
 }
 
 .sidebar-company strong {
     font-size: 12px;
+
+    color: #ffffff;
 }
 
 .sidebar-company span {
-    color: #8f9dac;
+    color: var(--sidebar-text);
+
     font-size: 11px;
 }
+
+/* ========================================
+   SCROLLBAR
+======================================== */
+
 .sidebar::-webkit-scrollbar {
     width: 4px;
 }
@@ -185,28 +322,76 @@
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background: rgb(85, 80, 80);
+    background: var(--border-color);
+
     border-radius: 999px;
-    transition: 0.3s ease;
+
+    transition: background-color 0.3s ease;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(66, 152, 223, 0.74);
+    background: var(--primary-color);
 }
+
+/* Firefox */
+
+.sidebar {
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        var(--border-color)
+        transparent;
+}
+
+/* ========================================
+   VARIÁVEIS ESPECÍFICAS DO SIDEBAR
+======================================== */
+
+/*
+   Essas variáveis complementam as que você
+   já possui no globals.css.
+*/
+
+:root {
+    --sidebar-bg: #172333;
+    --sidebar-text: #c6d0dc;
+    --sidebar-hover: rgba(255, 255, 255, 0.06);
+    --sidebar-active: #0879d1;
+}
+
+[data-theme="dark"] {
+    --sidebar-bg: #0b1120;
+    --sidebar-text: #aeb9c8;
+    --sidebar-hover: #172438;
+    --sidebar-active: #2196f3;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
 
 @media (max-width: 800px) {
 
     .sidebar {
         top: auto;
         bottom: 0;
+
         left: 0;
+
         width: 100%;
         height: 60px;
+
         transform: translateY(0);
+
         overflow: visible;
-        border-top: 1px solid #2b3a4d;
+
+        border-top: 1px solid var(--border-color);
         border-right: none;
-        transition: transform 0.3s ease;
+
+        transition:
+            transform 0.3s ease,
+            background-color 0.2s ease,
+            border-color 0.2s ease;
     }
 
     .sidebar.mobile-hidden {
@@ -217,20 +402,34 @@
         transform: translateY(0);
     }
 
+    /* ========================================
+       ÁREA INTERNA MOBILE
+    ======================================== */
+
     .side-sec {
         width: 100%;
         height: 60px;
+
         min-height: 60px;
 
         display: flex;
         flex-direction: row;
+
         align-items: center;
     }
+
+    /* ========================================
+       ESCONDER LOGO / EMPRESA
+    ======================================== */
 
     .logo,
     .sidebar-company {
         display: none;
     }
+
+    /* ========================================
+       MENU MOBILE
+    ======================================== */
 
     .sidebar-menu {
         width: 100%;
@@ -244,6 +443,7 @@
         justify-content: space-around;
 
         list-style: none;
+
         overflow-x: auto;
         overflow-y: hidden;
     }
@@ -251,6 +451,10 @@
     .sidebar-menu > li {
         flex-shrink: 0;
     }
+
+    /* ========================================
+       TÍTULOS DOS GRUPOS
+    ======================================== */
 
     .menu-title {
         height: 60px;
@@ -267,10 +471,17 @@
         justify-content: center;
 
         border: none;
+
         background: transparent;
-        color: #fff;
+
+        color: var(--sidebar-text);
 
         cursor: pointer;
+    }
+
+    .menu-button:hover {
+        background: transparent;
+        color: #ffffff;
     }
 
     .menu-button span {
@@ -281,6 +492,10 @@
         display: none;
     }
 
+    /* ========================================
+       LINKS DIRETOS MOBILE
+    ======================================== */
+
     .sidebar-menu > li > a {
         width: 60px;
         height: 60px;
@@ -288,6 +503,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
+        padding: 0;
     }
 
     .sidebar-menu > li > a span {
@@ -298,9 +515,10 @@
         margin: 0;
     }
 
-    /*
-       Submenu aberto acima da barra
-    */
+    /* ========================================
+       SUBMENU MOBILE
+    ======================================== */
+
     .submenu {
         position: fixed;
 
@@ -310,6 +528,7 @@
         width: 100%;
 
         max-height: 0;
+
         padding: 0;
 
         display: flex;
@@ -317,14 +536,15 @@
         overflow-x: auto;
         overflow-y: hidden;
 
-        background: #172333;
+        background: var(--sidebar-bg);
 
         opacity: 0;
         visibility: hidden;
 
         transition:
             max-height 0.25s ease,
-            opacity 0.2s ease;
+            opacity 0.2s ease,
+            background-color 0.2s ease;
     }
 
     .submenu.open {
@@ -353,12 +573,18 @@
 
         border-radius: 6px;
 
-        color: #fff;
+        color: var(--sidebar-text);
+
         text-decoration: none;
     }
 
-    .submenu li a:hover,
+    .submenu li a:hover {
+        background: var(--sidebar-hover);
+        color: #ffffff;
+    }
+
     .submenu li a.active {
-        background: #0879d1;
+        background: var(--sidebar-active);
+        color: #ffffff;
     }
 }

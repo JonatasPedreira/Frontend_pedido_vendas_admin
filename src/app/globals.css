@@ -1,3 +1,173 @@
 * {
-    font-family: sans-serif;
+  font-family: sans-serif;
+  }
+
+/* ========================================
+TEMA CLARO
+======================================== */
+
+:root {
+--bg-primary: #ffffff;
+--bg-secondary: #f5f7fa;
+--bg-card: #ffffff;
+
+--text-primary: #172333;
+--text-secondary: #667085;
+--text-muted: #98a2b3;
+
+--border-color: #e4e7ec;
+
+--primary-color: #0879d1;
+--primary-hover: #066bb8;
+
+--overlay-color: rgba(0, 0, 0, 0.45);
+
+--shadow-card: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+}
+
+/* ========================================
+TEMA ESCURO
+======================================== */
+
+[data-theme="dark"] {
+--bg-primary: #111827;
+--bg-secondary: #0b1120;
+--bg-card: #1f2937;
+
+--text-primary: #f1f5f9;
+--text-secondary: #cbd5e1;
+--text-muted: #94a3b8;
+
+--border-color: #374151;
+
+--primary-color: #2196f3;
+--primary-hover: #42a5f5;
+
+--overlay-color: rgba(0, 0, 0, 0.65);
+
+--shadow-card: 0 10px 40px rgba(0, 0, 0, 0.35);
+
+}
+
+/* ========================================
+CONFIGURAÇÕES GERAIS
+======================================== */
+
+html,
+body {
+margin: 0;
+padding: 0;
+background: var(--bg-secondary);
+color: var(--text-primary);
+transition:
+background-color 0.2s ease,
+color 0.2s ease;
+}
+
+/* ========================================
+MODAL DE SESSÃO EXPIRADA
+======================================== */
+
+.session-expired-overlay {
+position: fixed;
+inset: 0;
+z-index: 9999;
+display: flex;
+align-items: center;
+justify-content: center;
+background: var(--overlay-color);
+}
+
+.session-expired-modal {
+width: min(90%, 420px);
+padding: 30px;
+background: var(--bg-card);
+border-radius: 12px;
+text-align: center;
+box-shadow: var(--shadow-card);
+}
+
+.session-expired-modal h2 {
+margin: 0 0 12px;
+color: var(--text-primary);
+}
+
+.session-expired-modal p {
+margin: 0 0 24px;
+color: var(--text-secondary);
+line-height: 1.6;
+}
+
+.session-expired-modal button {
+border: none;
+border-radius: 6px;
+padding: 11px 20px;
+background: var(--primary-color);
+color: #fff;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+
+.session-expired-modal button:hover {
+background: var(--primary-hover);
+}
+:root {
+  --input-bg: #ffffff;
+  --input-border: #d9dfe6;
+
+  --table-header-bg: #f1f4f8;
+  --table-row-hover: #f8fafc;
+
+  --modal-bg: #ffffff;
+  --modal-border: #e5e7eb;
+
+  --status-faturado-bg: #d9f5e8;
+  --status-faturado-text: #16855d;
+
+  --status-separacao-bg: #dceeff;
+  --status-separacao-text: #0873c4;
+
+  --status-aguardando-bg: #fff0c2;
+  --status-aguardando-text: #9b7200;
+
+  --status-cancelado-bg: #fbdcdf;
+  --status-cancelado-text: #b4232d;
+
+  --card-icon-bg: rgba(173, 220, 247, 0.966);
+  --card-icon-color: #038ffa;
+
+  --open-icon-bg: rgba(250, 217, 144, 0.966);
+  --open-icon-color: #e76e0b;
+}
+
+[data-theme="dark"] {
+  --input-bg: #182231;
+  --input-border: #3b4658;
+
+  --table-header-bg: #182231;
+  --table-row-hover: #253246;
+
+  --modal-bg: #1f2937;
+  --modal-border: #374151;
+
+  --status-faturado-bg: #123d2d;
+  --status-faturado-text: #4ade80;
+
+  --status-separacao-bg: #123552;
+  --status-separacao-text: #60a5fa;
+
+  --status-aguardando-bg: #493b13;
+  --status-aguardando-text: #facc15;
+
+  --status-cancelado-bg: #4a2027;
+  --status-cancelado-text: #f87171;
+
+  --card-icon-bg: #123552;
+  --card-icon-color: #42a5f5;
+
+  --open-icon-bg: #493b13;
+  --open-icon-color: #f59e0b;
 }

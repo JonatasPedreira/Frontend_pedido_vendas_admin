@@ -7,6 +7,7 @@ interface AuthContextData {
     authenticated: boolean;
     loading: boolean;
     user: AuthResponse["user"] | null;
+    sessionExpired: boolean;
     loginUser: (payload: LoginPayload) => Promise<void>;
     logoutUser: () => Promise<void>;
 }
@@ -17,6 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [authenticated, setAuthenticated] = useState(false);
     const [user, setUser] = useState<AuthResponse["user"] | null>(null);
     const [loading, setLoading] = useState(true); // Começa em true para checagem no cliente
+    const [sessionExpired, setSessionExpired] = useState(false);
     
     const router = useRouter();
     const pathname = usePathname();
@@ -48,6 +50,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [authenticated, loading, pathname, router]);
 
+    useEffect(() => {
+        const handleSessionExpired = () => {
+            setSessionExpired(true);
+        };
+
+        window.addEventListener("session-expired", handleSessionExpired);
+
+        return () =>{
+            window.removeEventListener("session-expired", handleSessionExpired);
+        };
+    }, []);
+
     const loginUser = async (payload: LoginPayload) => {
         setLoading(true);
         try {
@@ -74,8 +88,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null; // Aqui você pode colocar um Spinner/Tela de Carregamento
     }
 
+    const handleSessionExpired = async () => {
+        setSessionExpired(false);
+        await logoutUser();
+    };
+
     return (
-        <AuthContext.Provider value={{ authenticated, loading, user, loginUser, logoutUser }}>
+        <AuthContext.Provider value={{ authenticated, loading, user, sessionExpired, loginUser, logoutUser }}>
+            {sessionExpired && pathname !== "/login" && (
+                <div className="session-expired-overlay">
+                    <div className="session-expired-modal">
+                        <h2>Sessão expirada</h2>
+                        <p>
+                            Seu tempo de acesso expirou.
+                            <br />
+                            Faça login novamente para continuar.
+                        </p>
+                        <button onClick={handleSessionExpired}>
+                            Fazer login novamente
+                        </button>
+                    </div>
+                </div>
+            )}
             {children}
         </AuthContext.Provider>
     );

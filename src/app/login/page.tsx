@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock, faBuilding } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faBuilding, faDatabase } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/login.css"; // Certifique-se de apontar para a pasta correta do CSS
 
 export default function LoginPage() {
@@ -38,7 +38,7 @@ export default function LoginPage() {
                 
                 <div className="login-header">
                     <h1 className="login-logo">
-                        <span className="icon-diamond">◇</span>
+                        <span className="icon-diamond"><FontAwesomeIcon icon={faDatabase} /></span>
                         Gestor<span>ERP</span>
                     </h1>
                     <p className="login-subtitle">Acesse sua conta corporativa</p>
