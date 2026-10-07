@@ -87,7 +87,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </li>
 
                     <li>
-                        <Link href="#" className={pathname === "#" ? "active" : ""}>
+                        <Link href="/dashboard" className={pathname === "/dashboard" ? "active" : ""}>
                             <FontAwesomeIcon icon={faTableColumns} />
                             <span>Dashboard</span>
                         </Link>
