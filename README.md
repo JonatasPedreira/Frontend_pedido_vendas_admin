@@ -171,3 +171,21 @@ vendas-next/
 ├── package-lock.json
 ├── README.md
 └── tsconfig.json
+```
+<img width="1366" height="682" alt="image" src="https://github.com/user-attachments/assets/232ea258-f9e2-48c2-b7a7-1579abc8fed4" />
+<img width="1366" height="644" alt="image" src="https://github.com/user-attachments/assets/98cdcc42-3e4a-4ce3-bec1-052b1a3a92e1" />
+<img width="1365" height="646" alt="image" src="https://github.com/user-attachments/assets/697e5c06-826f-4778-8623-665b6e5e4802" />
+<img width="1366" height="683" alt="WhatsApp Image 2026-10-02 at 11 52 31" src="https://github.com/user-attachments/assets/abe6c2fb-9cdd-42c3-ac62-79c104872c86" />
+<img width="1364" height="647" alt="WhatsApp Image 2026-10-02 at 11 52 55" src="https://github.com/user-attachments/assets/5684b89b-746a-472b-9dc5-61864c3b8ecf" />
+<img width="1364" height="642" alt="WhatsApp Image 2026-10-02 at 11 53 55" src="https://github.com/user-attachments/assets/1c372b7b-6f68-401b-bd27-8bf1ee731304" />
+<img width="1365" height="644" alt="WhatsApp Image 2026-10-02 at 11 54 13" src="https://github.com/user-attachments/assets/d254f727-2c27-4da9-a55c-fe1e7cd49945" />
+<img width="1366" height="642" alt="WhatsApp Image 2026-10-02 at 11 54 46" src="https://github.com/user-attachments/assets/6ea7be05-2918-4444-a4f1-a1b59614de01" />
+<img width="1366" height="644" alt="WhatsApp Image 2026-10-02 at 11 55 09" src="https://github.com/user-attachments/assets/ea3a7321-3370-46a7-8437-e01e2bed717b" />
+<img width="1366" height="642" alt="WhatsApp Image 2026-10-02 at 11 55 40" src="https://github.com/user-attachments/assets/b4287a0e-311f-4817-996d-7ae0767b51ba" />
+<img width="1366" height="643" alt="WhatsApp Image 2026-10-02 at 11 56 19" src="https://github.com/user-attachments/assets/3d0533a1-dcf0-4aad-84cc-34f8481196a0" />
+<img width="1366" height="643" alt="WhatsApp Image 2026-10-02 at 11 56 39" src="https://github.com/user-attachments/assets/dcebaed5-fea5-46ff-92d7-a0698dd7b879" />
+<img width="1366" height="640" alt="WhatsApp Image 2026-10-02 at 11 57 08" src="https://github.com/user-attachments/assets/38f8d3cf-cb9f-446c-9140-b6470a126fdb" />
+<img width="1366" height="642" alt="WhatsApp Image 2026-10-02 at 11 57 28" src="https://github.com/user-attachments/assets/d72cfb62-f6ac-4373-a088-71dd40ad3d2d" />
+<img width="1366" height="644" alt="WhatsApp Image 2026-10-02 at 11 58 03" src="https://github.com/user-attachments/assets/ec5c22f2-5fdd-4203-a373-15c169c14eea" />
+<img width="1366" height="643" alt="WhatsApp Image 2026-10-02 at 11 58 20" src="https://github.com/user-attachments/assets/93e580cf-0a66-4e17-bc44-416d586496c2" />
+<img width="1366" height="641" alt="WhatsApp Image 2026-10-02 at 11 59 23" src="https://github.com/user-attachments/assets/7d607954-8d88-472b-90f6-c275feb3aa29" />
