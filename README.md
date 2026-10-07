@@ -1,36 +1,173 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GestorERP
 
-## Getting Started
+A modern and responsive ERP sales management system built with **Next.js, React and TypeScript**.
 
-First, run the development server:
+GestorERP is designed to provide a centralized interface for managing sales, orders and customers, with a responsive layout suitable for desktop, tablet and mobile devices.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> 🚧 **Project Status:** In Development
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📋 About the Project
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+GestorERP is a web-based ERP application focused on sales management.
 
-## Learn More
+The project was developed with a component-based architecture using Next.js and React, with a focus on:
 
-To learn more about Next.js, take a look at the following resources:
+- Clean and reusable components
+- Responsive design
+- Authentication and protected pages
+- Sales and order management
+- Dashboard visualization
+- Light and dark themes
+- API integration
+- Maintainable project structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The application is being developed with scalability in mind, allowing new ERP modules and features to be added in the future.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## ✨ Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🔐 Authentication
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Login system
+- User session management
+- Protected application pages
+- User account menu
+- Logout functionality
+
+### 📊 Dashboard
+
+The dashboard provides an overview of sales activity through:
+
+- Sales and revenue indicators
+- Revenue evolution chart
+- Orders by status chart
+- Recent orders table
+- Responsive dashboard cards
+
+### 🛒 Order Management
+
+- Order listing
+- Order filtering
+- Order status visualization
+- Order details
+- New order creation
+- Customer and salesperson information
+- Responsive order tables
+
+### 🎨 Interface
+
+- Responsive layout
+- Desktop, tablet and mobile support
+- Light and dark themes
+- Reusable UI components
+- Sidebar navigation
+- Header with user account controls
+- Responsive tables and dashboards
+
+---
+
+## 🛠️ Technologies
+
+The project is built with the following technologies:
+
+| Technology | Purpose |
+|------------|---------|
+| **Next.js** | React framework and application routing |
+| **React** | User interface and component architecture |
+| **TypeScript** | Static typing and safer development |
+| **Recharts** | Dashboard charts and data visualization |
+| **Axios** | HTTP requests and API communication |
+| **Font Awesome** | Interface icons |
+| **CSS** | Styling and responsive layouts |
+
+---
+
+## 📁 Project Structure
+
+The project uses the **Next.js App Router** and a component-based architecture.
+
+```text
+vendas-next/
+│
+├── public/
+│
+├── src/
+│   │
+│   ├── app/
+│   │   ├── contexts/
+│   │   │   └── AuthContext.tsx
+│   │   │
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── lib/
+│   │   │   ├── theme/
+│   │   │   ├── api.ts
+│   │   │   ├── auth.ts
+│   │   │   ├── clients.ts
+│   │   │   ├── orders.ts
+│   │   │   ├── payment-methods.ts
+│   │   │   └── products.ts
+│   │   │
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── novo-pedido/
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── pedidos/
+│   │   │   ├── [id]/
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   │
+│   ├── components/
+│   │   │
+│   │   ├── layout/
+│   │   │   ├── dashboard/
+│   │   │   │   ├── OrdersStatusChart.tsx
+│   │   │   │   ├── RecentOrders.tsx
+│   │   │   │   └── SalesChart.tsx
+│   │   │   │
+│   │   │   ├── header/
+│   │   │   │   └── Header.tsx
+│   │   │   │
+│   │   │   ├── pagecontainer/
+│   │   │   │   └── PageContainer.tsx
+│   │   │   │
+│   │   │   └── sidebar/
+│   │   │       ├── Sidebar.tsx
+│   │   │       └── MainLayout.tsx
+│   │   │
+│   │   └── themeToggle/
+│   │       └── ThemeToggle.tsx
+│   │
+│   ├── styles/
+│   │   ├── layout/
+│   │   │   ├── Header.css
+│   │   │   ├── MainLayout.css
+│   │   │   └── Sidebar.css
+│   │   │
+│   │   ├── dashboard.css
+│   │   ├── home.css
+│   │   ├── login.css
+│   │   ├── novo-pedido.css
+│   │   ├── pedidos.css
+│   │   ├── ThemeToggle.css
+│   │   └── visualizar-pedido.css
+│   │
+│   └── types/
+│
+├── .gitignore
+├── eslint.config.mjs
+├── next.config.ts
+├── package.json
+├── package-lock.json
+├── README.md
+└── tsconfig.json
