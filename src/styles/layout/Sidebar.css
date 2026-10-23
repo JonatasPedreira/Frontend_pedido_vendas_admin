@@ -1,33 +1,38 @@
 
-/* ========================================
-   SIDEBAR
+/*========================================
+VARIÁVEIS DA SIDEBAR — NOVA IDENTIDADE
 ======================================== */
+
+:root {
+--sidebar-bg: #006B50;
+--sidebar-text: #E0EEE8;
+--sidebar-hover: rgba(255, 255, 255, 0.09);
+--sidebar-active: #FFD426;
+--sidebar-active-text: #17382D;
+}
+
+[data-theme="dark"] {
+--sidebar-bg: #0B1410;
+--sidebar-text: #C1D0C7;
+--sidebar-hover: #192720;
+--sidebar-active: #19A578;
+--sidebar-active-text: #FFFFFF;
+}
 
 .sidebar {
     position: fixed;
-
     top: 0;
     left: 0;
-
+    z-index: 1200;
     width: 250px;
     height: 100vh;
-
-    background: var(--sidebar-bg);
-    color: var(--sidebar-text);
-
-    z-index: 1200;
-
     overflow-y: auto;
-
-    transform: translateX(-100%);
-
+    color: var(--sidebar-text);
+    background: var(--sidebar-bg);
     border-right: 1px solid var(--border-color);
-
     transition:
         transform 0.3s ease,
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease;
+        background-color 0.2s ease;
 }
 
 .sidebar.hidden {
@@ -38,332 +43,156 @@
     transform: translateX(0);
 }
 
-/* ========================================
-   ÁREA INTERNA
-======================================== */
-
 .side-sec {
-    min-height: 100%;
-
     display: flex;
     flex-direction: column;
+    min-height: 100%;
 }
 
-/* ========================================
-   LOGO
-======================================== */
-
 .logo {
-    height: 64px;
-
     display: flex;
     align-items: center;
-
     gap: 10px;
+    padding: 16px 20px;
+    min-width: 0;
+}
 
-    padding: 0 20px;
-
-    border-bottom: 1px solid var(--border-color);
-
+.sidebar-logo-image {
+    display: block;
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
     flex-shrink: 0;
 }
 
-.logo-icon {
-    font-size: 30px;
-    color: var(--primary-color);
-}
-
 .logo strong {
+    color: var(--text-primary);
     font-size: 21px;
-    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
 }
 
 .logo strong span {
-    color: var(--primary-color);
+    color: var(--brand-yellow);
 }
-
-/* ========================================
-   MENU PRINCIPAL
-======================================== */
 
 .sidebar-menu {
-    list-style: none;
-
-    padding: 15px 0;
     margin: 0;
+    padding: 15px 10px;
+    list-style: none;
 }
 
-.sidebar-menu li {
-    margin: 2px 0;
+.sidebar-menu > li {
+    margin: 3px 0;
 }
 
-/* ========================================
-   LINKS PRINCIPAIS
-======================================== */
-
-.sidebar-menu a {
+.sidebar-menu a,
+.menu-button {
     display: flex;
     align-items: center;
-
     gap: 14px;
-
+    width: 100%;
     min-height: 42px;
-
-    padding: 0 22px;
-
+    padding: 0 14px;
+    border: none;
+    border-radius: 9px;
     color: var(--sidebar-text);
-
+    background: transparent;
     text-decoration: none;
-
+    text-align: left;
+    font-family: inherit;
     font-size: 14px;
-
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    box-sizing: border-box;
 }
 
-.sidebar-menu a svg {
+.sidebar-menu a svg,
+.menu-button > svg:first-child {
     width: 17px;
+    flex-shrink: 0;
 }
 
-/* Hover */
-
-.sidebar-menu a:hover {
+.sidebar-menu a:hover,
+.menu-button:hover {
+    color: #fff;
     background: var(--sidebar-hover);
-    color: #ffffff;
 }
 
-/* Link ativo */
-
-.sidebar-menu a.active {
+.sidebar-menu a.active,
+.menu-group.active > .menu-button {
+    color: var(--sidebar-active-text);
     background: var(--sidebar-active);
-    color: #ffffff;
 }
 
-/* ========================================
-   GRUPOS
-======================================== */
-
-.menu-group {
-    position: relative;
-}
-
-/* ========================================
-   TÍTULO DO GRUPO
-======================================== */
-
-.menu-title {
-    display: flex;
-    align-items: center;
-
-    justify-content: space-between;
-
-    color: #ffffff;
-}
-
-.menu-title > a {
+.menu-button > span {
     flex: 1;
 }
 
-.menu-title > svg {
+.group-chevron {
     width: 12px;
-    margin-right: 18px;
+    transition: transform 0.2s ease;
 }
 
-/* ========================================
-   BOTÃO DO GRUPO
-======================================== */
+.group-chevron.rotated {
+    transform: rotate(180deg);
+}
 
-.menu-button {
-    width: 100%;
+.submenu,
+.more-submenu {
+    margin: 4px 0 8px;
+    padding: 0 0 0 18px;
+    list-style: none;
+}
 
+.submenu a,
+.submenu .sidebar-placeholder {
     display: flex;
     align-items: center;
-
-    gap: 14px;
-
-    padding: 0 22px;
-
-    min-height: 42px;
-
-    border: none;
-
-    background: transparent;
-
-    color: var(--sidebar-text);
-
-    font-size: 14px;
-
-    text-align: left;
-
-    cursor: pointer;
-
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
-}
-
-.menu-button:hover {
-    background: var(--sidebar-hover);
-    color: #ffffff;
-}
-
-.menu-button svg {
-    width: 17px;
-}
-
-.menu-button svg:last-child {
-    margin-left: auto;
-
-    width: 12px;
-
-    transition: transform 0.3s ease;
-}
-
-/* ========================================
-   GRUPO ATIVO
-======================================== */
-
-.menu-group.active > .menu-title {
-    background: var(--sidebar-active);
-}
-
-.menu-group.active > .menu-title .menu-button {
-    color: #ffffff;
-}
-
-/* ========================================
-   SUBMENU
-======================================== */
-
-.submenu {
-    list-style: none;
-
-    padding: 0;
-    margin: 0;
-
-    background: var(--sidebar-bg);
-
-    max-height: 0;
-
-    overflow: hidden;
-
-    transition:
-        max-height 0.3s ease,
-        background-color 0.2s ease;
-}
-
-.submenu.open {
-    max-height: 300px;
-}
-
-.submenu a {
-    padding-left: 44px;
-
     min-height: 36px;
-
+    padding: 7px 10px 7px 28px;
+    border-radius: 8px;
     font-size: 13px;
-
-    border-radius: 15px;
 }
 
-/* Submenu hover */
-
-.submenu a:hover {
-    background: var(--sidebar-hover);
+.sidebar-placeholder {
+    color: var(--sidebar-text);
+    opacity: 0.65;
 }
-
-/* Submenu ativo */
-
-.submenu a.active {
-    background: var(--sidebar-active);
-    color: #ffffff;
-}
-
-/* ========================================
-   EMPRESA
-======================================== */
 
 .sidebar-company {
-    margin-top: auto;
-
-    padding: 20px;
-
-    border-top: 1px solid var(--border-color);
-
     display: flex;
     flex-direction: column;
-
     gap: 4px;
+    margin-top: auto;
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
 }
 
 .sidebar-company strong {
+    color: #fff;
     font-size: 12px;
-
-    color: #ffffff;
 }
 
 .sidebar-company span {
-    color: var(--sidebar-text);
-
     font-size: 11px;
 }
-
-/* ========================================
-   SCROLLBAR
-======================================== */
 
 .sidebar::-webkit-scrollbar {
     width: 4px;
 }
 
-.sidebar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
 .sidebar::-webkit-scrollbar-thumb {
     background: var(--border-color);
-
-    border-radius: 999px;
-
-    transition: background-color 0.3s ease;
+    border-radius: 99px;
 }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-color);
-}
-
-/* Firefox */
-
-.sidebar {
-    scrollbar-width: thin;
-
-    scrollbar-color:
-        var(--border-color)
-        transparent;
-}
-
-/* ========================================
-   VARIÁVEIS ESPECÍFICAS DO SIDEBAR
-======================================== */
-
-/*
-   Essas variáveis complementam as que você
-   já possui no globals.css.
-*/
-
-:root {
-    --sidebar-bg: #172333;
-    --sidebar-text: #c6d0dc;
-    --sidebar-hover: rgba(255, 255, 255, 0.06);
-    --sidebar-active: #0879d1;
-}
-
-[data-theme="dark"] {
-    --sidebar-bg: #0b1120;
-    --sidebar-text: #aeb9c8;
-    --sidebar-hover: #172438;
-    --sidebar-active: #2196f3;
+/* Escondida em telas grandes: será ativada no mobile */
+.mobile-bottom-nav,
+.mobile-more-panel,
+.mobile-more-backdrop {
+    display: none;
 }
 
 /* ========================================
@@ -371,220 +200,386 @@
 ======================================== */
 
 @media (max-width: 800px) {
-
-    .sidebar {
-        top: auto;
-        bottom: 0;
-
-        left: 0;
-
-        width: 100%;
-        height: 60px;
-
-        transform: translateY(0);
-
-        overflow: visible;
-
-        border-top: 1px solid var(--border-color);
-        border-right: none;
-
-        transition:
-            transform 0.3s ease,
-            background-color 0.2s ease,
-            border-color 0.2s ease;
-    }
-
-    .sidebar.mobile-hidden {
-        transform: translateY(100%);
-    }
-
-    .sidebar.mobile-visible {
-        transform: translateY(0);
-    }
-
-    /* ========================================
-       ÁREA INTERNA MOBILE
-    ======================================== */
-
-    .side-sec {
-        width: 100%;
-        height: 60px;
-
-        min-height: 60px;
-
-        display: flex;
-        flex-direction: row;
-
-        align-items: center;
-    }
-
-    /* ========================================
-       ESCONDER LOGO / EMPRESA
-    ======================================== */
-
-    .logo,
-    .sidebar-company {
+    .desktop-sidebar {
         display: none;
     }
 
-    /* ========================================
-       MENU MOBILE
-    ======================================== */
-
-    .sidebar-menu {
-        width: 100%;
-        height: 60px;
-
-        margin: 0;
-        padding: 0 8px;
-
-        display: flex;
+    .mobile-bottom-nav {
+        position: fixed;
+        z-index: 1400;
+        left: 16px;
+        right: 16px;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         align-items: center;
-        justify-content: space-around;
-
-        list-style: none;
-
-        overflow-x: auto;
-        overflow-y: hidden;
+        min-height: 68px;
+        padding: 7px 5px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 23px;
+        background: #17191f;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+        box-sizing: border-box;
     }
 
-    .sidebar-menu > li {
-        flex-shrink: 0;
-    }
-
-    /* ========================================
-       TÍTULOS DOS GRUPOS
-    ======================================== */
-
-    .menu-title {
-        height: 60px;
-    }
-
-    .menu-button {
-        width: 60px;
-        height: 60px;
-
-        padding: 0;
-
+    .mobile-nav-item {
         display: flex;
         align-items: center;
         justify-content: center;
-
-        border: none;
-
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+        min-height: 52px;
+        padding: 5px 2px;
+        border: 0;
+        border-radius: 15px;
+        color: #aeb6c5;
         background: transparent;
+        text-decoration: none;
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: color 0.2s, background-color 0.2s;
+    }
 
-        color: var(--sidebar-text);
+    .mobile-nav-item svg {
+        font-size: 18px;
+    }
 
+    .mobile-nav-item span {
+        overflow: hidden;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobile-nav-item.active {
+        color: var(--sidebar-active);
+        background: transparent;
+    }
+    .mobile-nav-item.active svg,
+    .mobile-nav-item.active span {
+        color: var(--sidebar-active);
+    }
+    .mobile-nav-item {
+        transition: 
+            color 0.2s ease,
+            background-color 0.2s ease,
+            transform 0.2s ease;
+        ;
+    }
+    .mobile-nav-item:active {
+        transform: scale(0.92);
+    }
+
+    .mobile-nav-item.activesvg {
+        animation: mobile-nav-icon-enter 0.25s ease-out;
+    }
+    @keyframes mobile-nav-icon-enter {
+        0% {
+            transform: scale(0.85);
+        }
+        65% {
+            transform: scale(1.15);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .mobile-nav-item:focus-visible,
+    .mobile-more-group-button:focus-visible {
+        outline: 2px solid var(--sidebar-active);
+        outline-offset: 2px;
+    }
+
+    /* Painel Mais */
+    .mobile-more-backdrop {
+        position: fixed;
+        z-index: 1300;
+        inset: 0;
+        display: block;
+        border: 0;
+        background: rgba(0, 0, 0, 0.42);
+        backdrop-filter: blur(2px);
+    }
+
+    .mobile-more-panel {
+        position: fixed;
+        z-index: 1350;
+        left: 12px;
+        right: 12px;
+        bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+        display: block;
+        max-height: min(65vh, 560px);
+        overflow-y: auto;
+        padding: 18px;
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        color: var(--text-color);
+        background: var(--card-background);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+        box-sizing: border-box;
+        animation: more-panel-enter 0.2s ease-out;
+    }
+
+    @keyframes more-panel-enter {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .mobile-more-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .mobile-more-header h2 {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 18px;
+    }
+
+    .mobile-more-header p {
+        margin: 4px 0 0;
+        color: var(--text-secondary);
+        font-size: 12px;
+    }
+
+    .mobile-more-header > button {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-color);
+        background: transparent;
         cursor: pointer;
     }
 
-    .menu-button:hover {
-        background: transparent;
-        color: #ffffff;
-    }
-
-    .menu-button span {
-        display: none;
-    }
-
-    .menu-button svg:last-child {
-        display: none;
-    }
-
-    /* ========================================
-       LINKS DIRETOS MOBILE
-    ======================================== */
-
-    .sidebar-menu > li > a {
-        width: 60px;
-        height: 60px;
-
+    .mobile-more-dashboard,
+    .mobile-more-group-button {
         display: flex;
         align-items: center;
-        justify-content: center;
-
-        padding: 0;
-    }
-
-    .sidebar-menu > li > a span {
-        display: none;
-    }
-
-    .sidebar-menu > li > a svg {
-        margin: 0;
-    }
-
-    /* ========================================
-       SUBMENU MOBILE
-    ======================================== */
-
-    .submenu {
-        position: fixed;
-
-        left: 0;
-        bottom: 60px;
-
+        gap: 12px;
         width: 100%;
-
-        max-height: 0;
-
-        padding: 0;
-
-        display: flex;
-
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        background: var(--sidebar-bg);
-
-        opacity: 0;
-        visibility: hidden;
-
-        transition:
-            max-height 0.25s ease,
-            opacity 0.2s ease,
-            background-color 0.2s ease;
+        min-height: 46px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 10px;
+        color: var(--text-color);
+        background: transparent;
+        text-decoration: none;
+        text-align: left;
+        font-family: inherit;
+        font-size: 14px;
+        cursor: pointer;
+        box-sizing: border-box;
     }
 
-    .submenu.open {
-        max-height: 60px;
-
-        padding: 8px;
-
-        opacity: 1;
-        visibility: visible;
+    .mobile-more-dashboard {
+        margin-bottom: 5px;
+        background: var(--sidebar-hover);
     }
 
-    .submenu li {
-        flex-shrink: 0;
+    .mobile-more-dashboard svg,
+    .mobile-more-group-button > svg:first-child {
+        width: 18px;
+        color: var(--primary-color);
     }
 
-    .submenu li a {
+    .mobile-more-group-button > span {
+        flex: 1;
+    }
+
+    .mobile-more-group-button:hover,
+    .mobile-more-dashboard:hover {
+        background: var(--sidebar-hover);
+    }
+
+    .mobile-more-group.active > .mobile-more-group-button {
+        color: var(--primary-color);
+    }
+
+    .more-submenu {
+        margin: 0 0 8px 12px;
+        padding: 0 0 0 18px;
+        border-left: 1px solid var(--border-color);
+    }
+
+    .more-submenu a,
+    .more-submenu .sidebar-placeholder {
         display: flex;
         align-items: center;
-        justify-content: center;
-
-        height: 44px;
-
-        padding: 0 18px;
-
-        white-space: nowrap;
-
-        border-radius: 6px;
-
-        color: var(--sidebar-text);
-
+        min-height: 40px;
+        padding: 7px 10px;
+        border-radius: 8px;
+        color: var(--text-secondary);
         text-decoration: none;
+        font-size: 13px;
+        box-sizing: border-box;
     }
 
-    .submenu li a:hover {
+    .more-submenu a.active {
+        color: var(--primary-color);
         background: var(--sidebar-hover);
-        color: #ffffff;
     }
 
-    .submenu li a.active {
-        background: var(--sidebar-active);
-        color: #ffffff;
+    .more-submenu a:hover {
+        color: var(--primary-color);
+    }
+
+    /* O conteúdo não fica escondido atrás da footerbar */
+    .page-content {
+        padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mobile-more-panel {
+        animation: none;
+    }
+
+    .mobile-nav-item,
+    .group-chevron {
+        transition: none;
+    }
+}
+/* Lista mobile escondida no desktop */
+.pedidos-mobile-list {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    .pedidos-page .tabela-wrapper {
+        display: none !important;
+    }
+
+    .pedidos-page .pedidos-mobile-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .pedidos-page .pedido-mobile-card {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        background: var(--card-background);
+        color: var(--text-color);
+        text-align: left;
+        font: inherit;
+        cursor: pointer;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .pedidos-page .pedido-mobile-card:active {
+        transform: scale(0.985);
+    }
+
+    .pedidos-page .pedido-mobile-card:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 3px;
+    }
+
+    .pedidos-page .pedido-mobile-topo {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .pedidos-page .pedido-mobile-numero {
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .pedidos-page .pedido-mobile-topo .status {
+        max-width: 60%;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .pedidos-page .pedido-mobile-cliente {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 16px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .pedidos-page .pedido-mobile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+
+    .pedidos-page .pedido-mobile-label {
+        color: var(--text-secondary);
+        font-size: 12px;
+    }
+
+    .pedidos-page .pedido-mobile-rodape {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .pedidos-page .pedido-mobile-rodape > div {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    .pedidos-page .pedido-mobile-rodape strong {
+        color: var(--primary-color);
+        font-size: 17px;
+        overflow-wrap: anywhere;
+    }
+
+    .pedidos-page .pedido-mobile-ver {
+        flex-shrink: 0;
+        color: var(--primary-color);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .pedidos-page .pedidos-mobile-empty {
+        padding: 24px 12px;
+        color: var(--text-secondary);
+        text-align: center;
+        font-size: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pedidos-page .pedido-mobile-card {
+        transition: none;
     }
 }

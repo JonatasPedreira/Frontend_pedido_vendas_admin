@@ -9,12 +9,11 @@ import Icon from "@mdi/react";
 import { mdiClockTimeThreeOutline, mdiCurrencyUsd, mdiFileDocumentOutline, mdiFinance } from "@mdi/js";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBan, faCopy, faEye, faPen, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faPencil, faSliders, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const ITENS_POR_PAGINA = 10;
 const PEDIDOS_POR_CARGA = 100;
 
-// ⚠️ mapeamento provisório — ajuste os números conforme a tabela real de SIT_CODIGO
 function getStatusInfo(situacao: number) {
     const mapa: Record<number, { label: string; className: string }> = {
         1: { label: "Aguardando Faturamento", className: "aguardando" },
@@ -23,6 +22,14 @@ function getStatusInfo(situacao: number) {
         4: { label: "Cancelado", className: "cancelado" },
     };
     return mapa[situacao] ?? { label: `Status ${situacao}`, className: "aguardando" };
+}
+
+function formatarDataPedido(data: string) {
+    if (!data) return "";
+
+    const [ano, mes, dia] = data.substring(0, 10).split("-");
+
+    return `${dia}/${mes}/${ano}`;
 }
 
 function Variacao({
@@ -103,6 +110,7 @@ export default function PedidosPage() {
     const [filtroAtivo, setFiltroAtivo] = useState(false);
     const [filtrando, setFiltrando] = useState(false);
     const [limpandoFiltro, setLimpandoFiltro] = useState(false);
+    const [filtrosAbertos, setFiltrosAbertos] = useState(false);
 
     const totalPaginasFiltro = Math.max(1, Math.ceil(pedidosFiltrados.length / ITENS_POR_PAGINA));
     const inicio = filtroAtivo ? (paginaAtual - 1) * ITENS_POR_PAGINA : ((paginaAtual - 1) % (PEDIDOS_POR_CARGA / ITENS_POR_PAGINA)) * ITENS_POR_PAGINA;
@@ -301,6 +309,7 @@ export default function PedidosPage() {
                 filtroDataFim
             );
         }
+        setFiltrosAbertos(false);
     }
     async function carregarPagina(pagina: number) {
         try {
@@ -383,6 +392,7 @@ export default function PedidosPage() {
             // IMPORTANTE:
             // Atualiza os cards para os últimos 30 dias
             setMetricas(metricasData);
+            setFiltrosAbertos(false);
         } catch (error) {
             console.error(
                 "ERRO AO LIMPAR FILTROS:",
@@ -555,6 +565,22 @@ export default function PedidosPage() {
                 setCarregando(false);
             });
     }, [storeId]);
+
+    useEffect(() => {
+        if (!filtrosAbertos) return;
+        const overflowAnterior = document.body.style.overflow;
+        function fecharComEsc(event: KeyboardEvent) {
+            if (event.key === "Escape") {
+                setFiltrosAbertos(false);
+            }
+        }
+        document.body.style.overflow = "hidden";
+        window.addEventListener("keydown", fecharComEsc);
+        return () => {
+            document.body.style.overflow = overflowAnterior;
+            window.removeEventListener("keydown", fecharComEsc);
+        };
+    }, [filtrosAbertos]);
     return (
         <div className="pedidos-page">
             <div className="breadcrumb">
@@ -633,28 +659,111 @@ export default function PedidosPage() {
                     </div>
                 </div>
             </div>
+            {/* Botão de filtros mobile */}
+            <div className="mobile-filters-toolbar">
+                <button
+                    type="button"
+                    className="mobile-filters-button"
+                    onClick={() => setFiltrosAbertos(true)}
+                    aria-expanded={filtrosAbertos}
+                    aria-controls="pedidos-filters-panel"
+                >
+                    <span className="mobile-filters-icon">
+                        <FontAwesomeIcon icon={faSliders} />
+                    </span>
 
-            <section className="filters-card">
+                    Filtros
+
+                    {(filtroCliente ||
+                        filtroStatus ||
+                        filtroVendedor ||
+                        filtroDataInicio ||
+                        filtroDataFim) && (
+                        <span className="mobile-filters-badge">
+                            Ativos
+                        </span>
+                    )}
+                </button>
+            </div>
+
+            {/* Fundo escurecido */}
+            {filtrosAbertos && (
+                <button
+                    type="button"
+                    className="mobile-filters-backdrop"
+                    aria-label="Fechar filtros"
+                    onClick={() => setFiltrosAbertos(false)}
+                />
+            )}
+
+            {/* Painel de filtros */}
+            <section
+                id="pedidos-filters-panel"
+                className={`filters-card ${filtrosAbertos ? "filters-open" : ""}`}
+            >
+                <div className="mobile-filters-header">
+                    <div>
+                        <h2>Filtros</h2>
+                        <p>Refine sua busca de pedidos</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="mobile-filters-close"
+                        onClick={() => setFiltrosAbertos(false)}
+                        aria-label="Fechar filtros"
+                    >
+                        <FontAwesomeIcon icon={faXmark} />
+                    </button>
+                </div>
+
                 <div className="periodo-filtro">
                     <label>Período</label>
+
                     <div className="periodo-input">
-                        <input type="date" value={filtroDataInicio} onChange={(e) => setFiltroDataInicio(e.target.value)} />
+                        <input
+                            type="date"
+                            value={filtroDataInicio}
+                            onChange={(e) => setFiltroDataInicio(e.target.value)}
+                        />
+
                         <span>até</span>
-                        <input type="date" value={filtroDataFim} onChange={(e) => setFiltroDataFim(e.target.value)} />
+
+                        <input
+                            type="date"
+                            value={filtroDataFim}
+                            onChange={(e) => setFiltroDataFim(e.target.value)}
+                        />
                     </div>
                 </div>
+
                 <div>
                     <label>Cliente</label>
-                    <select value={filtroCliente} onChange={(e) => setFiltroCliente(e.target.value)}>
+
+                    <select
+                        value={filtroCliente}
+                        onChange={(e) => setFiltroCliente(e.target.value)}
+                    >
                         <option value="">Todos os clientes</option>
+
                         {clientes.map((c) => (
-                            <option key={c.CLI_CODIGO} value={c.CLI_CODIGO}>{c.CLI_NOME}</option>
+                            <option
+                                key={c.CLI_CODIGO}
+                                value={c.CLI_CODIGO}
+                            >
+                                {c.CLI_NOME}
+                            </option>
                         ))}
                     </select>
                 </div>
+
                 <div>
                     <label>Status</label>
-                    <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
+
+                    <select
+                        value={filtroStatus}
+                        onChange={(e) => setFiltroStatus(e.target.value)}
+                    >
                         <option value="">Todos</option>
                         <option value="1">Aguardando Faturamento</option>
                         <option value="2">Em Separação</option>
@@ -662,41 +771,75 @@ export default function PedidosPage() {
                         <option value="4">Cancelado</option>
                     </select>
                 </div>
+
                 <div>
                     <label>Vendedor</label>
-                    <select value={filtroVendedor} onChange={(e) => setFiltroVendedor(e.target.value)}>
-                    <option value="">Todos</option>
-                    {[...new Map(pedidos.map((p) => [p.FUN_CODIGO, p.FUN_NOME,])).entries(), ].map(([codigo, nome]) => (
-                        <option key={codigo} value={codigo}>{nome}</option>
-                    ))}
+
+                    <select
+                        value={filtroVendedor}
+                        onChange={(e) => setFiltroVendedor(e.target.value)}
+                    >
+                        <option value="">Todos</option>
+
+                        {[...new Map(
+                            pedidos.map((p) => [
+                                p.FUN_CODIGO,
+                                p.FUN_NOME,
+                            ])
+                        ).entries()].map(([codigo, nome]) => (
+                            <option key={codigo} value={codigo}>
+                                {nome}
+                            </option>
+                        ))}
                     </select>
                 </div>
-                <button className="filter-button" onClick={filtrarPedidos} disabled={filtrando}>
+
+                <button
+                    type="button"
+                    className="filter-button"
+                    onClick={filtrarPedidos}
+                    disabled={filtrando}
+                >
                     {filtrando ? (
                         <>
-                            <span className="button-spinner"></span>
+                            <span className="button-spinner" />
                             Filtrando...
                         </>
                     ) : (
                         "Filtrar"
                     )}
                 </button>
-                <button className="clear-button" onClick={limparFiltros}>Limpar filtros</button>
+
+                <button
+                    type="button"
+                    className="clear-button"
+                    onClick={limparFiltros}
+                    disabled={limpandoFiltro}
+                >
+                    {limpandoFiltro ? "Limpando..." : "Limpar filtros"}
+                </button>
             </section>
             <section className="table-card">
-                {carregando ? (
+               {carregando ? (
                     <div className="tabela-loading">
                         <div className="loading-spinner"></div>
                         <span>Carregando pedidos...</span>
                     </div>
-                    ): (
+                ) : (
+                    <>
+                        {/* Tabela original para desktop */}
                         <div className="table-responsive tabela-wrapper">
                             {(filtrando || limpandoFiltro) && (
                                 <div className="tabela-filtro-loading">
                                     <div className="loading-spinner"></div>
-                                    <span>{limpandoFiltro ? "Limpando Filtros..." : "Filtrando Pedidos..."}</span>
+                                    <span>
+                                        {limpandoFiltro
+                                            ? "Limpando Filtros..."
+                                            : "Filtrando Pedidos..."}
+                                    </span>
                                 </div>
                             )}
+
                             <table>
                                 <thead>
                                     <tr>
@@ -711,32 +854,68 @@ export default function PedidosPage() {
                                 </thead>
 
                                 <tbody>
-                                    {carregando && <tr><td colSpan={7}>Carregando pedidos...</td></tr>}
-                                    {!carregando && erro && <tr><td colSpan={7}>{erro}</td></tr>}
-                                    {!carregando && !erro && pedidosDaPagina.length === 0 && (
-                                        <tr><td colSpan={7}>Nenhum pedido encontrado.</td></tr>
+                                    {erro && (
+                                        <tr>
+                                            <td colSpan={7}>{erro}</td>
+                                        </tr>
                                     )}
 
-                                    {!carregando && !erro && pedidosDaPagina.map((pedido) => {
-                                        const statusInfo = getStatusInfo(pedido.SIT_CODIGO);
+                                    {!erro && pedidosDaPagina.length === 0 && (
+                                        <tr>
+                                            <td colSpan={7}>
+                                                Nenhum pedido encontrado.
+                                            </td>
+                                        </tr>
+                                    )}
+
+                                    {!erro && pedidosDaPagina.map((pedido) => {
+                                        const statusInfo = getStatusInfo(
+                                            pedido.SIT_CODIGO
+                                        );
 
                                         return (
                                             <tr key={pedido.VEN_NUMERO}>
                                                 <td>{pedido.VEN_NUMERO}</td>
-                                                <td>{new Date(pedido.VEN_DATA).toLocaleDateString("pt-BR")}</td>
+                                                <td>
+                                                    {formatarDataPedido(pedido.VEN_DATA)}
+                                                </td>
                                                 <td>{pedido.CLI_NOME}</td>
                                                 <td>{pedido.FUN_NOME}</td>
-                                                <td>{pedido.VEN_TOTALLIQUIDO.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                                <td><span className={`status ${statusInfo.className}`}>{statusInfo.label}</span></td>
+                                                <td>
+                                                    {pedido.VEN_TOTALLIQUIDO.toLocaleString(
+                                                        "pt-BR",
+                                                        { minimumFractionDigits: 2 }
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        className={`status ${statusInfo.className}`}
+                                                    >
+                                                        {statusInfo.label}
+                                                    </span>
+                                                </td>
                                                 <td className="acoes-pedidos">
                                                     <button
                                                         type="button"
                                                         className="btn-acoes-pedido"
-                                                        onClick={() => router.push(`/pedidos/${pedido.VEN_NUMERO}`)}
+                                                        onClick={() =>
+                                                            router.push(
+                                                                `/pedidos/${pedido.VEN_NUMERO}`
+                                                            )
+                                                        }
                                                         aria-label={`Visualizar pedido ${pedido.VEN_NUMERO}`}
                                                         title="Visualizar pedido"
                                                     >
                                                         <FontAwesomeIcon icon={faEye} />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-acoes-pedido"
+                                                        onClick={() => router.push(`/pedidos/${pedido.VEN_NUMERO}/editar`)}
+                                                        aria-label={`Editar pedido ${pedido.VEN_NUMERO}`}
+                                                        title="Editar pedido"
+                                                    >
+                                                        <FontAwesomeIcon icon={faPencil} />
                                                     </button>
                                                 </td>
                                             </tr>
@@ -745,7 +924,106 @@ export default function PedidosPage() {
                                 </tbody>
                             </table>
                         </div>
-                    )}
+
+                        {/* Cards de pedidos para celular */}
+                        <div className="pedidos-mobile-list">
+                            {erro ? (
+                                <div className="pedidos-mobile-empty">{erro}</div>
+                            ) : pedidosDaPagina.length === 0 ? (
+                                <div className="pedidos-mobile-empty">
+                                    Nenhum pedido encontrado.
+                                </div>
+                            ) : (
+                                pedidosDaPagina.map((pedido) => {
+                                    const statusInfo = getStatusInfo(
+                                        pedido.SIT_CODIGO
+                                    );
+
+                                    return (
+                                        <article
+                                            key={pedido.VEN_NUMERO}
+                                            className="pedido-mobile-card"
+                                        >
+                                            <div className="pedido-mobile-topo">
+                                                <span className="pedido-mobile-numero">
+                                                    Pedido #{pedido.VEN_NUMERO}
+                                                </span>
+
+                                                <span
+                                                    className={`status ${statusInfo.className}`}
+                                                >
+                                                    {statusInfo.label}
+                                                </span>
+                                            </div>
+
+                                            <h3 className="pedido-mobile-cliente">
+                                                {pedido.CLI_NOME}
+                                            </h3>
+
+                                            <div className="pedido-mobile-info">
+                                                <span className="pedido-mobile-label">
+                                                    Data do pedido
+                                                </span>
+                                                <span>
+                                                    {new Date(
+                                                        pedido.VEN_DATA
+                                                    ).toLocaleDateString("pt-BR")}
+                                                </span>
+                                            </div>
+
+                                            <div className="pedido-mobile-info">
+                                                <span className="pedido-mobile-label">
+                                                    Vendedor
+                                                </span>
+                                                <span>{pedido.FUN_NOME}</span>
+                                            </div>
+
+                                            <div className="pedido-mobile-rodape">
+                                                <div>
+                                                    <span className="pedido-mobile-label">
+                                                        Valor total
+                                                    </span>
+                                                    <strong>
+                                                        {pedido.VEN_TOTALLIQUIDO.toLocaleString(
+                                                            "pt-BR",
+                                                            {
+                                                                style: "currency",
+                                                                currency: "BRL",
+                                                            }
+                                                        )}
+                                                    </strong>
+                                                </div>
+
+                                                <div className="pedido-mobile-acoes">
+                                                    <button
+                                                        type="button"
+                                                        className="btn-mobile-visualizar"
+                                                        onClick={() =>
+                                                            router.push(`/pedidos/${pedido.VEN_NUMERO}`)
+                                                        }
+                                                    >
+                                                        <FontAwesomeIcon icon={faEye} />
+                                                        Visualizar
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-mobile-editar"
+                                                        onClick={() =>
+                                                            router.push(`/pedidos/${pedido.VEN_NUMERO}/editar`)
+                                                        }
+                                                    >
+                                                        <FontAwesomeIcon icon={faPencil} />
+                                                        Editar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </>
+                )}
                 <div className="table-footer">
                     <span>
                         Mostrando{" "}

@@ -1,28 +1,29 @@
-* {
-    font-family: sans-serif;
-    box-sizing: border-box;
-}
+/* =======================================
+   PEDIDOS
+======================================= */
 
 .pedidos-page {
     width: 100%;
     max-width: 100%;
-    padding: 20px;
+    min-width: 0;
     margin: 0;
+    padding: 20px;
     color: var(--text-primary);
+    box-sizing: border-box;
 }
 
-/* =========================
+/* =======================================
    BREADCRUMB
-========================= */
+======================================= */
 
 .breadcrumb {
-    font-size: 13px;
-    color: var(--text-secondary);
     margin-bottom: 15px;
+    color: var(--text-secondary);
+    font-size: 13px;
 }
 
 .breadcrumb span {
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 .breadcrumb a {
@@ -34,9 +35,9 @@
     text-decoration: underline;
 }
 
-/* =========================
+/* =======================================
    TÍTULO
-========================= */
+======================================= */
 
 .page-title {
     display: flex;
@@ -50,25 +51,36 @@
     margin: 0;
     color: var(--text-primary);
     font-size: 25px;
+    line-height: 1.3;
     font-weight: 700;
 }
 
 .page-title p {
-    margin: 3px 0 0;
+    margin: 5px 0 0;
     color: var(--text-secondary);
     font-size: 13px;
+    line-height: 1.5;
 }
 
 .novo-pedido {
+    min-height: 42px;
     flex-shrink: 0;
-    text-decoration: none;
-    border: none;
-    background: #079667;
-    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     padding: 10px 18px;
-    border-radius: 5px;
+    border: none;
+    border-radius: 7px;
+
+    background: #079667;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 .novo-pedido:hover {
@@ -80,86 +92,89 @@
     cursor: not-allowed;
 }
 
-/* =========================
-   CARDS
-========================= */
+/* =======================================
+   CARDS DE RESUMO
+======================================= */
 
 .summary-cards {
-    width: 100%;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
+    width: 100%;
     margin-bottom: 15px;
 }
 
 .summary-card {
     min-width: 0;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 16px;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 15px;
+    gap: 14px;
+
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+
+    background: var(--bg-card);
     box-shadow: var(--shadow-card);
 }
 
 .summary-card > div:not(.icon-card):not(.icon-aberto) {
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    min-width: 0;
+}
+
+.icon-card,
+.icon-aberto {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 2px;
+    border-radius: 9px;
+    box-sizing: border-box;
 }
 
 .icon-card {
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    padding: 2px;
-    background-color: var(--card-icon-bg);
+    background: var(--card-icon-bg);
     color: var(--card-icon-color);
-    border-radius: 5px;
-    flex-shrink: 0;
 }
 
 .icon-aberto {
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    padding: 2px;
-    background-color: var(--open-icon-bg);
+    background: var(--open-icon-bg);
     color: var(--open-icon-color);
-    border-radius: 5px;
-    flex-shrink: 0;
 }
 
 .summary-card span {
     color: var(--text-secondary);
     font-size: 12px;
+    line-height: 1.4;
 }
 
 .summary-card strong {
+    overflow: hidden;
+    margin-top: 3px;
+
     color: var(--text-primary);
     font-size: 20px;
-    overflow: hidden;
+    line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* =========================
+/* =======================================
    VARIAÇÃO
-========================= */
+======================================= */
 
 .card-variation {
     display: flex !important;
     flex-direction: row !important;
     align-items: center;
+    flex-wrap: wrap;
     gap: 5px;
     margin-top: 6px;
     font-size: 13px;
@@ -185,56 +200,70 @@
 
 .card-variation .variation-label {
     margin-left: 3px;
-    font-weight: 400;
     color: var(--text-secondary) !important;
+    font-weight: 400;
 }
 
-/* =========================
+/* =======================================
    FILTROS
-========================= */
+======================================= */
 
 .filters-card {
     width: 100%;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 15px;
+    min-width: 0;
+
     display: flex;
     align-items: flex-end;
     gap: 12px;
+
     margin-bottom: 15px;
+    padding: 15px;
+
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+
+    background: var(--bg-card);
     box-shadow: var(--shadow-card);
+    box-sizing: border-box;
 }
 
 .filters-card > div {
     min-width: 0;
+    flex: 1;
+
     display: flex;
     flex-direction: column;
-    flex: 1;
 }
 
-.filters-card label {
+.filters-card label,
+.periodo-filtro label {
+    margin-bottom: 7px;
     color: var(--text-primary);
     font-size: 12px;
     font-weight: 600;
-    margin-bottom: 6px;
 }
 
 .filters-card input,
 .filters-card select {
     width: 100%;
-    height: 36px;
+    height: 42px;
     min-width: 0;
+    padding: 0 10px;
+
     border: 1px solid var(--input-border);
-    border-radius: 4px;
-    padding: 0 8px;
+    border-radius: 7px;
+
     color: var(--text-primary);
     background: var(--input-bg);
+    font: inherit;
+    font-size: 14px;
+
     outline: none;
+    box-sizing: border-box;
+
     transition:
         border-color 0.2s ease,
-        background-color 0.2s ease,
-        color 0.2s ease;
+        background-color 0.2s ease;
 }
 
 .filters-card input:focus,
@@ -251,19 +280,21 @@
     color: var(--text-primary);
 }
 
-/* =========================
+/* =======================================
    SPINNER DO BOTÃO
-========================= */
+======================================= */
 
 .button-spinner {
     display: inline-block;
-    vertical-align: middle;
-    margin-right: 8px;
     width: 14px;
     height: 14px;
+    margin-right: 8px;
+
     border: 2px solid rgba(255, 255, 255, 0.4);
-    border-top-color: #ffffff;
+    border-top-color: #fff;
     border-radius: 50%;
+
+    vertical-align: middle;
     animation: button-spinner 0.7s linear infinite;
 }
 
@@ -273,20 +304,25 @@
     }
 }
 
-/* =========================
+/* =======================================
    BOTÕES DE FILTRO
-========================= */
+======================================= */
 
 .filter-button {
-    height: 36px;
-    padding: 0 20px;
+    min-height: 42px;
     flex-shrink: 0;
+    padding: 0 18px;
+
     border: none;
-    border-radius: 4px;
+    border-radius: 7px;
+
     background: var(--primary-color);
-    color: #ffffff;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 .filter-button:hover {
@@ -299,12 +335,17 @@
 }
 
 .clear-button {
-    height: 36px;
-    padding: 0 5px;
+    min-height: 42px;
     flex-shrink: 0;
+    padding: 0 8px;
+
     border: none;
+    border-radius: 7px;
+
     background: transparent;
     color: var(--primary-color);
+    font-size: 14px;
+
     text-decoration: underline;
     cursor: pointer;
 }
@@ -318,26 +359,31 @@
     cursor: not-allowed;
 }
 
-/* =========================
+/* =======================================
    TABELA
-========================= */
+======================================= */
 
 .table-card {
     width: 100%;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    min-width: 0;
+
     overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+
+    background: var(--bg-card);
     box-shadow: var(--shadow-card);
 }
 
 .tabela-loading {
-    min-height: 400px;
+    min-height: 300px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
+
     color: var(--text-secondary);
     font-size: 14px;
 }
@@ -345,10 +391,12 @@
 .loading-spinner {
     width: 32px;
     height: 32px;
+
     border: 3px solid var(--border-color);
     border-top-color: var(--primary-color);
     border-radius: 50%;
-    animation: tabela-spinner 1.8s linear infinite;
+
+    animation: tabela-spinner 1.2s linear infinite;
 }
 
 @keyframes tabela-spinner {
@@ -359,17 +407,20 @@
 
 .tabela-wrapper {
     position: relative;
+    min-width: 0;
 }
 
 .tabela-filtro-loading {
     position: absolute;
     inset: 0;
     z-index: 10;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
+
     background: var(--overlay-color);
     backdrop-filter: blur(2px);
     color: var(--text-primary);
@@ -377,29 +428,37 @@
 
 .table-responsive {
     width: 100%;
+    min-width: 0;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .table-card table {
     width: 100%;
+    min-width: 850px;
     border-collapse: collapse;
     table-layout: auto;
 }
 
 .table-card th {
+    padding: 13px 10px;
+
     background: var(--table-header-bg);
     color: var(--text-secondary);
+
     font-size: 11px;
+    font-weight: 600;
     text-align: left;
-    padding: 12px 10px;
     white-space: nowrap;
 }
 
 .table-card td {
+    padding: 13px 10px;
     border-top: 1px solid var(--border-color);
-    padding: 11px 10px;
-    font-size: 12px;
+
     color: var(--text-secondary);
+    font-size: 12px;
 }
 
 .table-card tbody tr {
@@ -422,15 +481,19 @@
     white-space: nowrap;
 }
 
-/* =========================
+/* =======================================
    STATUS
-========================= */
+======================================= */
 
 .status {
-    display: inline-block;
-    padding: 4px 8px;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+
     border-radius: 12px;
     font-size: 10px;
+    font-weight: 600;
+    line-height: 1.3;
     white-space: nowrap;
 }
 
@@ -454,40 +517,47 @@
     color: var(--status-cancelado-text);
 }
 
-/* =========================
+/* =======================================
    RODAPÉ DA TABELA
-========================= */
+======================================= */
 
 .table-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
     gap: 15px;
+
     padding: 18px;
-    font-size: 12px;
-    color: var(--text-secondary);
     border-top: 1px solid var(--border-color);
+
+    color: var(--text-secondary);
+    font-size: 12px;
 }
 
-/* =========================
+/* =======================================
    PAGINAÇÃO
-========================= */
+======================================= */
 
 .pagination {
     display: flex;
     align-items: center;
-    gap: 5px;
+    justify-content: flex-end;
     flex-wrap: wrap;
+    gap: 5px;
 }
 
 .pagination button {
-    min-width: 34px;
-    height: 34px;
+    min-width: 36px;
+    min-height: 36px;
     padding: 0 8px;
+
     border: 1px solid var(--border-color);
+    border-radius: 6px;
+
     background: var(--bg-card);
     color: var(--text-secondary);
-    border-radius: 4px;
+
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -500,7 +570,7 @@
 
 .pagination button.active {
     background: var(--primary-color);
-    color: #ffffff;
+    color: #fff;
     border-color: var(--primary-color);
 }
 
@@ -516,31 +586,31 @@
     cursor: default;
 }
 
-/* =========================
+/* =======================================
    PERÍODO
-========================= */
+======================================= */
 
 .periodo-filtro {
-    flex: 1;
     min-width: 0;
+    flex: 1;
 }
 
 .periodo-filtro label {
     display: block;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 6px;
 }
 
 .periodo-input {
-    height: 36px;
     width: 100%;
+    height: 42px;
+
     display: flex;
     align-items: center;
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
-    background: var(--input-bg);
+
     overflow: hidden;
+    border: 1px solid var(--input-border);
+    border-radius: 7px;
+
+    background: var(--input-bg);
 }
 
 .periodo-input:focus-within {
@@ -548,14 +618,18 @@
 }
 
 .periodo-input input {
-    flex: 1;
+    height: 40px;
     min-width: 0;
-    height: 34px;
+    flex: 1;
+
+    padding: 0 8px;
     border: none;
     outline: none;
-    padding: 0 8px;
+
     color: var(--text-primary);
     background: transparent;
+    font: inherit;
+    font-size: 13px;
 }
 
 .periodo-input input::-webkit-calendar-picker-indicator {
@@ -569,14 +643,14 @@
 
 .periodo-input span {
     flex-shrink: 0;
+    padding: 0 5px;
     color: var(--text-muted);
     font-size: 12px;
-    padding: 0 5px;
 }
 
-/* =========================
+/* =======================================
    AÇÕES DOS PEDIDOS
-========================= */
+======================================= */
 
 .acoes-pedido {
     width: 60px;
@@ -585,13 +659,19 @@
 
 .btn-acoes-pedido {
     position: relative;
+
+    min-width: 36px;
+    min-height: 36px;
+    padding: 6px 8px;
+
     border: none;
+    border-radius: 6px;
+
     background: transparent;
     color: var(--text-secondary);
     font-size: 15px;
+
     cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 5px;
     transition: all 0.2s ease;
 }
 
@@ -600,29 +680,37 @@
     color: var(--primary-color);
 }
 
-/* =========================
-   MODAL
-========================= */
+/* =======================================
+   MODAL DE PEDIDO
+======================================= */
 
 .modal-overlay {
     position: fixed;
     inset: 0;
     z-index: 10000;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     padding: 20px;
     background: var(--overlay-color);
+    box-sizing: border-box;
 }
 
 .modal-pedido {
     width: 100%;
     max-width: 700px;
     max-height: 90vh;
+    max-height: 90dvh;
+
     overflow-y: auto;
+    overscroll-behavior: contain;
+
     background: var(--modal-bg);
     border: 1px solid var(--modal-border);
-    border-radius: 10px;
+    border-radius: 12px;
+
     box-shadow: var(--shadow-card);
 }
 
@@ -630,6 +718,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
+
     padding: 20px 24px;
     border-bottom: 1px solid var(--modal-border);
 }
@@ -645,15 +735,24 @@
     margin: 0;
     color: var(--text-primary);
     font-size: 22px;
+    overflow-wrap: anywhere;
 }
 
 .modal-fechar {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     border: none;
-    border-radius: 6px;
+    border-radius: 7px;
+
     background: transparent;
     color: var(--text-secondary);
+
     font-size: 25px;
     line-height: 1;
     cursor: pointer;
@@ -675,6 +774,7 @@
 }
 
 .pedido-info {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -688,12 +788,15 @@
 .pedido-info strong {
     color: var(--text-primary);
     font-size: 14px;
+    overflow-wrap: anywhere;
 }
 
 .pedido-total {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
+
     margin-top: 24px;
     padding-top: 18px;
     border-top: 1px solid var(--border-color);
@@ -707,11 +810,12 @@
 .pedido-total strong {
     color: var(--primary-color);
     font-size: 21px;
+    overflow-wrap: anywhere;
 }
 
-/* =========================
+/* =======================================
    TABLET
-========================= */
+======================================= */
 
 @media (max-width: 1100px) {
     .summary-cards {
@@ -723,7 +827,8 @@
     }
 
     .filters-card > div {
-        min-width: calc(50% - 6px);
+        flex: 1 1 calc(50% - 6px);
+        min-width: 0;
     }
 
     .filter-button,
@@ -732,9 +837,9 @@
     }
 }
 
-/* =========================
+/* =======================================
    MOBILE
-========================= */
+======================================= */
 
 @media (max-width: 768px) {
     .pedidos-page {
@@ -744,34 +849,77 @@
     .page-title {
         align-items: flex-start;
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
     }
 
     .page-title h1 {
-        font-size: 21px;
+        font-size: 22px;
     }
 
     .novo-pedido {
         width: 100%;
     }
 
+    /* Two summary cards per row on mobile. */
     .summary-cards {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .summary-card {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .icon-card,
+    .icon-aberto {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+    }
+
+    .summary-card span {
+        font-size: 11px;
+    }
+
+    .summary-card strong {
+        font-size: 18px;
+    }
+
+    .card-variation {
+        gap: 3px;
+        font-size: 11px;
     }
 
     .filters-card {
         flex-direction: column;
         align-items: stretch;
+        gap: 13px;
+        padding: 14px;
     }
 
     .filters-card > div {
         width: 100%;
-        min-width: 100%;
+        min-width: 0;
+        flex: none;
+    }
+
+    .filters-card input,
+    .filters-card select,
+    .periodo-input {
+        height: 44px;
+        font-size: 14px;
+    }
+
+    .periodo-input input {
+        height: 42px;
     }
 
     .filter-button,
     .clear-button {
         width: 100%;
+        min-height: 44px;
+        margin-top: 0;
     }
 
     .table-responsive {
@@ -785,28 +933,41 @@
     .table-footer {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
+        padding: 14px;
     }
 
     .pagination {
         width: 100%;
         justify-content: center;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         gap: 4px;
     }
 
     .pagination button {
-        min-width: 32px;
-        height: 32px;
+        min-width: 36px;
+        min-height: 36px;
         padding: 0 6px;
         flex-shrink: 0;
     }
 
     .modal-overlay {
+        align-items: center;
         padding: 10px;
     }
 
+    .modal-pedido {
+        max-height: 92vh;
+        max-height: 92dvh;
+        border-radius: 10px;
+    }
+
     .modal-pedido-header {
-        padding: 16px;
+        padding: 15px;
+    }
+
+    .modal-pedido-header h2 {
+        font-size: 19px;
     }
 
     .modal-pedido-conteudo {
@@ -814,42 +975,698 @@
     }
 
     .pedido-info-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px 12px;
     }
 }
 
-/* =========================
-   CELULAR PEQUENO
-========================= */
+/* =======================================
+   SMALL MOBILE
+======================================= */
 
-@media (max-width: 480px) {
+@media (max-width: 380px) {
     .pedidos-page {
-        padding: 8px;
+        padding: 10px;
     }
 
     .breadcrumb {
         font-size: 11px;
     }
 
+    .breadcrumb span {
+        margin: 0 4px;
+    }
+
     .page-title h1 {
-        font-size: 19px;
+        font-size: 20px;
     }
 
     .page-title p {
         font-size: 12px;
     }
 
+    .summary-cards {
+        gap: 8px;
+    }
+
     .summary-card {
-        padding: 13px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 12px 10px;
+    }
+
+    .summary-card > div:not(.icon-card):not(.icon-aberto) {
+        width: 100%;
+    }
+
+    .summary-card strong {
+        font-size: 18px;
+    }
+
+    .card-variation {
+        flex-wrap: wrap;
     }
 
     .table-footer {
-        padding: 14px;
+        padding: 12px;
+    }
+
+    .pagination {
+        gap: 3px;
     }
 
     .pagination button {
         min-width: 32px;
-        height: 32px;
+        min-height: 34px;
+        padding: 0 5px;
+    }
+
+    .modal-pedido-header {
+        padding: 12px;
+    }
+
+    .modal-pedido-conteudo {
+        padding: 13px;
+    }
+
+    .pedido-info-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+    }
+
+    .pedido-total strong {
+        font-size: 18px;
+    }
+}
+
+/* =======================================
+   ACCESSIBILITY
+======================================= */
+
+.pedidos-page button:focus-visible,
+.pedidos-page a:focus-visible,
+.pedidos-page input:focus-visible,
+.pedidos-page select:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pedidos-page *,
+    .pedidos-page *::before,
+    .pedidos-page *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+.mobile-filters-toolbar,
+.mobile-filters-header,
+.mobile-filters-backdrop {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    .mobile-filters-toolbar {
+        display: flex;
+        margin: 0 0 12px;
+    }
+    .mobile-filters-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        width: 100%;
+        min-height: 46px;
+        padding: 10px 16px;
+        border: 1px solid var(--primary-color);
+        border-radius: 10px;
+        color: var(--primary-color);
+        background: var(--card-background);
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .mobile-filters-button:active {
+        transform: scale(0.98);
+    }
+    .mobile-filters-icon {
+        font-size: 21px;
+        line-height: 1;
+    }
+    .mobile-filters-badge {
+        padding: 3px 8px;
+        border-radius: 20px;
+        color: #fff;
+        background: var(--primary-color);
+        font-size: 11px;
+    }
+    .mobile-filters-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1500;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: 0;
+        background: rgba(0, 0, 0, 0.55);
+        animation: filters-backdrop-enter 0.2s ease-out;
+    }
+    .pedidos-page .filters-card.filters-open {
+        position: fixed;
+        z-index: 1510;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        width: 100%;
+        max-height: 85dvh;
+        overflow-y: auto;
+        margin: 0;
+        padding: 22px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+        border: 1px solid var(--border-color);
+        border-bottom: 0;
+        border-radius: 22px 22px 0 0;
+        background: var(--card-background);
+        box-shadow: 0 -8px 35px rgba(0, 0, 0, 0.18);
+        box-sizing: border-box;
+        animation: filters-panel-enter 0.25s ease-out;
+    }
+    .mobile-filters-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 2px;
+    }
+    .mobile-filters-header h2 {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 19px;
+    }
+    .mobile-filters-header p {
+        margin: 4px 0 0;
+        color: var(--text-secondary);
+        font-size: 13px;
+    }
+    .mobile-filters-close {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 38px;
+        height: 38px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-color);
+        background: transparent;
+        font-size: 27px;
+        line-height: 1;
+        cursor: pointer;
+    }
+    .pedidos-page .filters-card label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .pedidos-page .filters-card select,
+    .pedidos-page .filters-card input {
+        width: 100%;
+        min-width: 0;
+        min-height: 45px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+    .pedidos-page .filters-card .periodo-input span {
+        font-size: 12px;
+    }
+    .pedidos-page .filters-card .filter-button,
+    .pedidos-page .filters-card .clear-button {
+        width: 100%;
+        min-height: 46px;
+        margin: 0;
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .pedidos-page .filters-card .filter-button {
+        margin-top: 4px;
+    }
+    .pedidos-page .filters-card .clear-button {
+        margin-top: -8px;
+    }
+}
+@keyframes filters-panel-enter {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes filters-backdrop-enter {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mobile-filters-button,
+    .mobile-filters-backdrop,
+    .pedidos-page .filters-card.filters-open {
+        animation: none;
+        transition: none;
+    }
+}
+@media (max-width: 800px) {
+    /* A seção original fica escondida enquanto o painel está fechado */
+    .pedidos-page > .filters-card {
+        display: none !important;
+    }
+
+    /* Painel aberto por cima da página */
+    .pedidos-page > .filters-card.filters-open {
+        display: grid !important;
+        position: fixed !important;
+        z-index: 1510;
+        inset: auto 0 0;
+        width: 100%;
+        max-height: 85dvh;
+        overflow-y: auto;
+        margin: 0;
+        padding: 20px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+        border-radius: 22px 22px 0 0;
+        box-sizing: border-box;
+        background: var(--card-background);
+    }
+
+    /* Cabeçalho do painel */
+    .pedidos-page > .filters-card .mobile-filters-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+    /* O botão abre filtros; não deve ser afetado pelas regras do painel */
+    .pedidos-page .mobile-filters-toolbar {
+        display: flex;
+    }
+
+    /* Fundo escuro somente quando aberto */
+    .pedidos-page .mobile-filters-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1500;
+        background: rgba(0, 0, 0, 0.55);
+    }
+}
+@media (max-width: 800px) {
+    .pedidos-page .mobile-filters-header {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .pedidos-page .mobile-filters-header > div {
+        flex: 1;
+        min-width: 0;
+    }
+    .pedidos-page .mobile-filters-close {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 38px;
+        height: 38px;
+        margin: 0;
+        padding: 0;
+        align-self: flex-start;
+    }
+}
+/* Esconde o cabeçalho do painel no desktop */
+.mobile-filters-header {
+    display: none !important;
+}
+
+/* Exibe somente no mobile */
+@media (max-width: 800px) {
+    
+    .pedidos-page .pedido-mobile-card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+        padding: 12px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background: var(--bg-card);
+        color: var(--text-primary);
+        text-align: left;
+        font: inherit;
+        box-sizing: border-box;
+        cursor: default;
+        transition: border-color 0.2s ease;
+    }
+
+    .pedidos-page .pedido-mobile-card:hover {
+        border-color: var(--primary-color);
+    }
+
+    .pedidos-page .pedido-mobile-card:active {
+        transform: none;
+    }
+
+    .pedidos-page .pedido-mobile-card:focus-visible {
+        outline: none;
+    }
+
+    .pedidos-page .pedido-mobile-topo {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .pedidos-page .pedido-mobile-numero {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+
+    .pedidos-page .pedido-mobile-topo .status {
+        max-width: 60%;
+        font-size: 11px;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .pedidos-page .pedido-mobile-cliente {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.3;
+        color: var(--text-color);
+        overflow-wrap: anywhere;
+    }
+
+    .pedidos-page .pedido-mobile-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .pedidos-page .pedido-mobile-label {
+        color: var(--text-secondary);
+        font-size: 11px;
+    }
+
+    .pedidos-page .pedido-mobile-rodape {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .pedidos-page .pedido-mobile-rodape > div {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .pedidos-page .pedido-mobile-rodape strong {
+        color: var(--primary-color);
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .pedidos-page .pedido-mobile-ver {
+        flex-shrink: 0;
+        color: var(--primary-color);
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .pedidos-page .pedido-mobile-card:active {
+        transform: scale(0.99);
+    }
+
+    .pedidos-page .pedido-mobile-card:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+}
+
+/* =======================================
+   AÇÕES DA TABELA DE PEDIDOS
+======================================= */
+
+.table-card td.acoes-pedidos {
+    width: 110px;
+    min-width: 110px;
+    padding: 8px 10px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.acoes-pedidos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-acoes-pedido {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--primary-color);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+.btn-acoes-pedido:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-editar-pedido {
+    color: #0f766e;
+}
+
+.btn-acoes-pedido.btn-editar-pedido:hover {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #fff;
+}
+
+.btn-acoes-pedido:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .table-card td.acoes-pedidos {
+        width: 100px;
+        min-width: 100px;
+    }
+
+    .acoes-pedidos {
+        gap: 6px;
+    }
+
+    .btn-acoes-pedido {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+    }
+}
+
+/* =======================================
+   AÇÕES DOS CARDS MOBILE
+======================================= */
+
+.pedido-mobile-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-mobile-visualizar,
+.btn-mobile-editar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--primary-color);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+.btn-mobile-visualizar:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-mobile-editar {
+    color: #0f766e;
+}
+
+.btn-mobile-editar:hover {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #fff;
+}
+
+.btn-mobile-visualizar:focus-visible,
+.btn-mobile-editar:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+@media (max-width: 380px) {
+    .pedido-mobile-acoes {
+        gap: 6px;
+    }
+
+    .btn-mobile-visualizar,
+    .btn-mobile-editar {
+        gap: 5px;
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-mobile-visualizar,
+    .btn-mobile-editar {
+        transition: none;
+    }
+}
+
+/* Rodapé dos cards mobile */
+.pedidos-page .pedido-mobile-rodape {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.pedidos-page .pedido-mobile-acoes {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.pedidos-page .btn-mobile-visualizar,
+.pedidos-page .btn-mobile-editar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--primary-color);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .2s ease,
+                color .2s ease,
+                border-color .2s ease;
+}
+
+.pedidos-page .btn-mobile-visualizar:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.pedidos-page .btn-mobile-editar {
+    color: #0f766e;
+}
+
+.pedidos-page .btn-mobile-editar:hover {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #fff;
+}
+
+.pedidos-page .btn-mobile-visualizar:focus-visible,
+.pedidos-page .btn-mobile-editar:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+@media (max-width: 380px) {
+    .pedidos-page .pedido-mobile-acoes {
+        gap: 6px;
+    }
+
+    .pedidos-page .btn-mobile-visualizar,
+    .pedidos-page .btn-mobile-editar {
+        gap: 5px;
+        padding: 8px 5px;
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pedidos-page .btn-mobile-visualizar,
+    .pedidos-page .btn-mobile-editar {
+        transition: none;
     }
 }

@@ -7,7 +7,6 @@ import { useAuth } from "./contexts/AuthContext";
 export default function HomePage() {
     const {user} = useAuth();
 
-
     return (
         <div className="home-page">
             <div className="home-header">

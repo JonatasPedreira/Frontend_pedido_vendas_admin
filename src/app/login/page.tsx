@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock, faBuilding, faDatabase } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faBuilding, faDatabase, faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/login.css"; // Certifique-se de apontar para a pasta correta do CSS
+import Image from "next/image";
 
 export default function LoginPage() {
     const { loginUser } = useAuth();
@@ -13,6 +14,7 @@ export default function LoginPage() {
     const [tenantSlug, setTenantSlug] = useState("empresa");
     const [erro, setErro] = useState("");
     const [loading, setLoading] = useState(false);
+    const [mostrarSenha, setMostrarSenha] = useState(false);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -33,74 +35,125 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="login-page-container">
-            <div className="login-card">
-                
+        <main className="login-page-container">
+            <div className="login-decoration login-decoration-green" aria-hidden="true" />
+            <div className="login-decoration login-decoration-yellow" aria-hidden="true" />
+            <section className="login-card" aria-labelledby="login-title">    
                 <div className="login-header">
-                    <h1 className="login-logo">
-                        <span className="icon-diamond"><FontAwesomeIcon icon={faDatabase} /></span>
+                    <div className="login-brand">
+                        <Image 
+                            src="/image/Logo.fw.png"
+                            alt="Logo GestorERP"
+                            width={100}
+                            height={100}
+                            className="login-logo-image"
+                            priority
+                        />
+                    </div>
+                    <h1 id="login-title" className="login-logo">
                         Gestor<span>ERP</span>
                     </h1>
-                    <p className="login-subtitle">Acesse sua conta corporativa</p>
+                    <p className="login-subtitle">
+                        Entre na sua conta para continuar
+                    </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form">
                     
                     {/* Input do Tenant / Empresa */}
                     <div className="input-wrapper">
-                        <label>Empresa</label>
+                        <label htmlFor="tenantSlug">Empresa</label>
                         <div className="input-field-icon">
+                            <span className="login-input-icon" aria-hidden="true">
+                                <FontAwesomeIcon icon={faBuilding} />
+                            </span>
                             <input 
-                                type="text" 
+                                id="tenantSlug"
+                                type="text"
+                                name="tenantSlug"
+                                autoComplete="organization"
                                 value={tenantSlug} 
                                 onChange={(e) => setTenantSlug(e.target.value)} 
                                 placeholder="Slug da Empresa"
                                 disabled={loading}
                                 required
                             />
-                            <FontAwesomeIcon icon={faBuilding} />
                         </div>
                     </div>
 
                     {/* Input do Usuário */}
                     <div className="input-wrapper">
-                        <label>Usuário</label>
+                        <label htmlFor="username">Usuário</label>
                         <div className="input-field-icon">
+                            <span className="login-input-icon" aria-hidden="true">
+                                <FontAwesomeIcon icon={faUser} />
+                            </span>
                             <input 
-                                type="text" 
+                                id="username"
+                                name="username"
+                                type="text"
+                                autoComplete="username"
                                 value={username} 
                                 onChange={(e) => setUsername(e.target.value)} 
-                                placeholder="Nome do usuário" 
+                                placeholder="Digite seu usuário" 
                                 disabled={loading}
                                 required
                             />
-                            <FontAwesomeIcon icon={faUser} />
                         </div>
                     </div>
 
                     {/* Input da Senha */}
                     <div className="input-wrapper">
-                        <label>Senha</label>
+                        <label htmlFor="password">Senha</label>
                         <div className="input-field-icon">
-                            <input 
-                                type="password" 
+                            <span className="login-input-icon" aria-hidden="true">
+                                <FontAwesomeIcon icon={faLock} />
+                            </span>
+                            <input
+                                id="password"
+                                name="passeword"
+                                type={mostrarSenha ? "text" : "password"}
+                                autoComplete="current-password" 
                                 value={password} 
                                 onChange={(e) => setPassword(e.target.value)} 
                                 placeholder="Digite sua senha" 
                                 disabled={loading}
                                 required
                             />
-                            <FontAwesomeIcon icon={faLock} />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setMostrarSenha((atual) => !atual)}
+                                aria-label={
+                                    mostrarSenha ? "Ocultar senha" : "Mostrar senha"
+                                }
+                                aria-pressed={mostrarSenha}
+                                disabled={loading}
+                            >
+                                <FontAwesomeIcon icon={mostrarSenha ? faEyeSlash : faEye} />
+                            </button>
                         </div>
                     </div>
 
-                    {erro && <p className="login-error">{erro}</p>}
+                    {erro && <p className="login-error" role="alert">{erro}</p>}
 
                     <button type="submit" className="btn-login" disabled={loading}>
-                        {loading ? "Autenticando..." : "Entrar no Sistema"}
+                        {loading ? (
+                            <>
+                                <span className="login-spinner" aria-hidden="true" />
+                                <span>Autenticando...</span>
+                            </>
+                        ) : ("Entrar")}
                     </button>
+                    <p className="login-footer-text">
+                        Acesso seguro ao <strong>GestorERP</strong>
+                    </p>
                 </form>
+            </section>
+            <div className="login-bottom-decoration" aria-hidden="true">
+                <div className="login-bottom-yellow" />
+                <div className="login-bottom-green" /> 
             </div>
-        </div>
+        </main>
     );
 }

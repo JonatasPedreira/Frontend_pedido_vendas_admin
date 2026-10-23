@@ -3,7 +3,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import "@/styles/novo-pedido.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping, faFileLines, faMagnifyingGlass, faPercent, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAddressCard, faArrowLeft, faBoxesStacked, faCartShopping, faCheck, faClipboardCheck, faFileLines, faMagnifyingGlass, faPercent, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { getClients, getClientById, Client } from "@/app/lib/clients";
 import { getProducts, Product } from "@/app/lib/products";
 import { getLoggedUser } from "@/app/lib/auth";
@@ -32,8 +32,27 @@ export default function NovoPedidoPage() {
     const [resultadosCliente, setResultadosCliente] = useState<Client[]>([]);
     const [clienteSelecionado, setClienteSelecionado] = useState<Client | null>(null);
 
-    const [dataPedido, setDataPedido] = useState(new Date().toISOString().slice(0, 10));
-    const [prevFaturamento, setPrevFaturamento] = useState("");
+    const [dataPedido, setDataPedido] = useState(() => {
+        const hoje = new Date();
+
+        return [
+            hoje.getFullYear(),
+            String(hoje.getMonth() + 1).padStart(2, "0"),
+            String(hoje.getDate()).padStart(2, "0"),
+        ].join("-");
+    });
+
+    const [prevFaturamento, setPrevFaturamento] = useState(() => {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+        const dia = String(hoje.getDate()).padStart(2, "0");
+
+        return `${ano}-${mes}-${dia}`;
+    });
+    function handleDataPedidoChange(novaData: string) {
+        setDataPedido(novaData);
+    }
     const [tabelaPrecos, setTabelaPrecos] = useState("");
     const [condicaoPagamento, setCondicaoPagamento] = useState("");
     const [tipoFrete, setTipoFrete] = useState("");
@@ -46,14 +65,17 @@ export default function NovoPedidoPage() {
     const [descontoGlobalAberto, setDescontoGlobalAberto] = useState(false);
     const [descontoGlobalValor, setDescontoGlobalValor] = useState("");
     const descontoGlobalRef = useRef<HTMLDivElement>(null);
+    const [codigoPagamento, setCodigoPagamento] = useState("");
+    const [erroCodigoPagamento, setErroCodigoPagamento] = useState("");
     const [formaPagamento, setFormaPagamento] = useState<number | "">("");
     const [formasPagamento, setFormasPagamento] = useState<PaymentMethod[]>([]);
     const [finalizando, setFinalizando] = useState(false);
     const [erroFinalizar, setErroFinalizar] = useState("");
     const [modalCancelar, setModalCancelar] = useState(false);
     const [modalFinalizar, setModalFinalizar] = useState(false);
+    const [etapaAtual, setEtapaAtual] = useState(1);
     const router = useRouter();
-
+    
     function abrirSeletorArquivo() {
         arquivoInputRef.current?.click();
     }
@@ -289,6 +311,44 @@ export default function NovoPedidoPage() {
         if (itens.length === 0) return "Adicione ao menos um produto.";
         return null;
     }
+    function avancarEtapa() {
+        setErroFinalizar("");
+        if (etapaAtual === 1) {
+            if(!clienteSelecionado) {
+                setErroFinalizar("Selecione um cliente.");
+                return;
+            }
+            if (!vendedor) {
+                setErroFinalizar("Não foi possível identificar o vendedor.");
+                return;
+            }
+            if (!tabelaPrecos) {
+                setErroFinalizar("Selecione a tabela de preços.");
+                return;
+            }
+        }
+        if (etapaAtual === 2) {
+            if (itens.length === 0) {
+                setErroFinalizar("Adicionar ao menos um produto.");
+                return;
+            }
+            if (!condicaoPagamento) {
+                setErroFinalizar("Selecione a condição de pagamento.");
+                return;
+            }
+            if (formaPagamento === "") {
+                setErroFinalizar("Selecione a forma de pagamento.");
+                return;
+            }
+        }
+        setEtapaAtual((etapa) => Math.min(etapa + 1, 4));
+        window.scrollTo({top: 0, behavior: "smooth"});
+    }
+    function voltarEtapa() {
+        setErroFinalizar("");
+        setEtapaAtual((etapa) => Math.max(etapa - 1, 1));
+        window.scrollTo({top: 0, behavior:"smooth"});
+    }
     function handleCancelar() {
         const temDadosPreenchidos =
             clienteSelecionado ||
@@ -367,6 +427,33 @@ export default function NovoPedidoPage() {
             setFinalizando(false);
         }
     }
+    function aplicarCodigoPagamento() {
+        const codigo = codigoPagamento.trim();
+        if (!codigo) {
+            setErroCodigoPagamento("");
+            return;
+        }
+        if (codigo === "99") {
+            setCondicaoPagamento("99");
+            setFormaPagamento(1);
+            setErroCodigoPagamento("");
+            return;
+        }
+        const parcela = Number(codigo);
+
+        if (
+            /^\d+$/.test(codigo) &&
+            Number.isInteger(parcela) &&
+            parcela >= 1 &&
+            parcela <= 12
+        ) {
+            setCondicaoPagamento(String(parcela));
+            setFormaPagamento(4);
+            setErroCodigoPagamento("");
+            return;
+        }
+        setErroCodigoPagamento("Código inválido. Digite 99 ou um código de 1 a 12.");
+    }
 
     // --- totais do pedido ---
     const [frete, setFrete] = useState(0);
@@ -377,13 +464,26 @@ export default function NovoPedidoPage() {
     const totalPedido = subtotal - descontoTotal + frete + outrasDespesas;
 
     return (
-        <div className="novo-pedido-page">
-            <div className="novo-pedido-header">
+        <div className="novo-pedido-page" data-active-step={etapaAtual}>
+            <div className="novo-pedido-mobile-topo">
+                <button
+                    type="button"
+                    className="novo-pedido-voltar-pedidos"
+                    onClick={handleCancelar}
+                    aria-label="Voltar para Pedidos"
+                >
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                </button>
+                <div>
+                    <h1>Novo Pedido</h1>
+                </div>
+            </div>
+            <div className="novo-pedido-header-desktop">
                 <div>
                     <div className="novo-pedido-breadcrumb">
                         Vendas <span>›</span>
-                        <Link href="/pedidos">Pedidos de Venda</Link> <span>›</span>
-                        <Link href="/novo-pedido">Novo Pedido</Link>
+                        <Link href="/pedidos" onClick={handleCancelar}>Pedidos de Venda</Link> <span>›</span>
+                        <Link href="/novo-pedido" onClick={handleCancelar}>Novo Pedido</Link>
                     </div>
                     <h1>Novo Pedido de Venda</h1>
                     <p>Preencha os dados do cliente, adicione os produtos e finalize o pedido.</p>
@@ -393,8 +493,87 @@ export default function NovoPedidoPage() {
                     <FontAwesomeIcon icon={faFileLines} /> Pedidos Recentes <span>▾</span>
                 </button>
             </div>
-
-            <section className="novo-pedido-card">
+            <div className="pedido-progresso-mobile">
+                <div className="pedido-progresso-info">
+                    <span>Etapa {etapaAtual} de 4</span>
+                    <strong>{Math.round((etapaAtual / 4) * 100)}%</strong>
+                </div>
+                <div
+                    className="pedido-progresso-barra"
+                    role="progressbar"
+                    aria-label="Progresso do novo pedido"
+                    aria-valuemin={1}
+                    aria-valuemax={4}
+                    aria-valuenow={etapaAtual}
+                >
+                    <div
+                        className="pedido-progresso-preenchimento"
+                        style={{width: `${(etapaAtual / 4) * 100}%` }}
+                    />
+                </div>
+                <p>
+                    {[
+                        "Dados do pedido",
+                        "Produtos",
+                        "Conferência",
+                        "Finalização",
+                    ][etapaAtual - 1]}
+                </p>
+            </div>
+            <div className="pedido-stepper-desktop" aria-label="Etapas do novo pedido">
+                {[
+                    {
+                        numero: 1,
+                        titulo: "Dados do pedido",
+                        descricao: "Cliente e pagamento",
+                        icone: faAddressCard,
+                    },
+                    {
+                        numero: 2,
+                        titulo: "Produtos",
+                        descricao: "Itens do pedido",
+                        icone: faBoxesStacked,
+                    },
+                    {
+                        numero: 3,
+                        titulo: "Conferência",
+                        descricao: "Observações e totais",
+                        icone: faClipboardCheck,
+                    },
+                    {
+                        numero: 4,
+                        titulo: "Finalização",
+                        descricao: "Revisão do pedido",
+                        icone: faCheck,
+                    },
+                ].map((etapa) => (
+                    <div
+                        key={etapa.numero}
+                        className={[
+                            "pedido-stepper-item",
+                            etapaAtual === etapa.numero ? "ativo" : "",
+                            etapaAtual > etapa.numero ? "concluido" : "",
+                        ].filter(Boolean).join(" ")}
+                        aria-current={etapaAtual === etapa.numero ? "step" : undefined}
+                    >
+                        <div className="pedido-stepper-icone">
+                            {etapaAtual > etapa.numero ? (
+                                <FontAwesomeIcon icon={faCheck} />
+                            ) : (
+                                <FontAwesomeIcon icon={etapa.icone} />
+                            )}
+                        </div>
+                        <div className="pedido-stepper-texto">
+                            <span className="pedido-stepper-numero">
+                                ETAPA {etapa.numero}
+                            </span>
+                            <strong>{etapa.titulo}</strong>
+                            <small>{etapa.descricao}</small>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <section className="novo-pedido-card" data-step="1">
                 <div className="cabecalho-grid">
                     <div className="form-group cliente-col">
                         <label>Cliente <span>*</span></label>
@@ -444,12 +623,17 @@ export default function NovoPedidoPage() {
 
                     <div className="form-group">
                         <label>Data do Pedido <span>*</span></label>
-                        <input type="date" value={dataPedido} onChange={(e) => setDataPedido(e.target.value)} />
+                        <input type="date" value={dataPedido} onChange={(e) => handleDataPedidoChange(e.target.value)} disabled />
                     </div>
 
                     <div className="form-group">
-                        <label>Prev. Faturamento</label>
-                        <input type="date" value={prevFaturamento} onChange={(e) => setPrevFaturamento(e.target.value)} />
+                        <label>Data Base</label>
+                        <input 
+                            type="date" 
+                            value={prevFaturamento}
+                            onChange={(e) => setPrevFaturamento(e.target.value)}
+                            min={dataPedido} 
+                        />
                     </div>
 
                     <div className="form-group">
@@ -463,26 +647,6 @@ export default function NovoPedidoPage() {
                             <option value="">Selecione a tabela</option>
                             <option value="1">Varejo</option>
                             <option value="2">Atacado</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Condição de Pagamento <span>*</span></label>
-                        <select value={condicaoPagamento} onChange={(e) => setCondicaoPagamento(e.target.value)}>
-                            <option value="">Selecione a condição</option>
-                            <option value="1">À Vista</option>
-                            <option value="2">30 Dias</option>
-                            <option value="3">30/60 Dias</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Forma de Pagamento <span>*</span></label>
-                        <select value={formaPagamento} onChange={(e) => setFormaPagamento(Number(e.target.value))}>
-                            <option value="">Selecione</option>
-                            {formasPagamento.map((f) => (
-                                <option key={f.FPG_CODIGO} value={f.FPG_CODIGO}>{f.FPG_DESCRICAO}</option>
-                            ))}
                         </select>
                     </div>
 
@@ -518,7 +682,7 @@ export default function NovoPedidoPage() {
                 </div>
             </section>
 
-            <section className="novo-pedido-card itens-pedido-card">
+            <section className="novo-pedido-card itens-pedido-card" data-step="2">
                 <div className="itens-pedido-header">
                     <h2>Produtos</h2>
                     <p>Adicione os produtos que farão parte deste pedido.</p>
@@ -607,15 +771,11 @@ export default function NovoPedidoPage() {
                         </tbody>
                     </table>
                 </div>
-
                 <div className="itens-pedido-acoes">
                     <button type="button" className="btn-limpar-itens" onClick={limparItens}>
                         <FontAwesomeIcon icon={faTrash} /> Limpar Itens
                     </button>
 
-                    <button type="button" className="btn-importar-itens" onClick={abrirSeletorArquivo} disabled={importando}>
-                        <FontAwesomeIcon icon={faFileLines} /> {importando ? "Importando..." : "Importar Itens"}
-                    </button>
                     <input
                         type="file"
                         accept=".csv,.txt"
@@ -660,9 +820,60 @@ export default function NovoPedidoPage() {
                 {resumoImportacao && (
                     <p className="aviso-importacao">{resumoImportacao}</p>
                 )}
+                <div className="form-group">
+                    <label htmlFor="codigoPagamento" className="pagamento-label">
+                        Código de pagamento<span>*</span>
+                    </label>
+                </div>
+                <div className="pagamento-grid">
+                    <div className="pagamento-group">
+                        <input
+                            id="codigoPagamento"
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="Digite 99 ou de 1 a 12"
+                            value={codigoPagamento}
+                            onChange={(e) => {
+                                setCodigoPagamento(e.target.value);
+                                setErroCodigoPagamento("");
+                            }}
+                            onBlur={aplicarCodigoPagamento}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    aplicarCodigoPagamento();
+                                }
+                            }}
+                        />
+                        {erroCodigoPagamento && (
+                            <small className="erro-codigo-pagamento">
+                                {erroCodigoPagamento}
+                            </small>
+                        )}
+                    </div>
+                    <div className="pagamento-group">
+                        <select value={condicaoPagamento} onChange={(e) => setCondicaoPagamento(e.target.value)}>
+                            <option value="">Selecione a condição</option>
+                            <option value="99">ENT/A VISTA</option>
+                            {Array.from({ length:12 }, (_, i) => i + 1).map((codigo) => (
+                                <option key={codigo} value={String(codigo)}>
+                                    0 + {codigo}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="pagamento-group">
+                        <select value={formaPagamento} onChange={(e) => {setFormaPagamento(e.target.value === "" ? "" : Number(e.target.value))}}>
+                            <option value="">Selecione a forma</option>
+                            {formasPagamento.map((f) => (
+                                <option key={f.FPG_CODIGO} value={f.FPG_CODIGO}>{f.FPG_CODIGO} - {f.FPG_DESCRICAO}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
             </section>
 
-            <section className="novo-pedido-rodape">
+            <section className="novo-pedido-rodape" data-step="3">
                 <div className="observacoes-pedido">
                     <label>Observações do Pedido</label>
                     <textarea
@@ -680,8 +891,71 @@ export default function NovoPedidoPage() {
                     <div className="totais-linha total-final"><span>Total do Pedido</span><span>R$ {totalPedido.toFixed(2)}</span></div>
                 </div>
             </section>
-
+            <section className="novo-pedido-card pedido-revisao-mobile" data-step="4">
+                <h2>Revise seu pedido</h2>
+                <p>Confira as informações antes de confirmar.</p>
+                <div className="pedido-revisao-linha">
+                    <span>Cliente</span>
+                    <strong>{clienteSelecionado?.CLI_NOME || "Não selecionado"}</strong>
+                </div>
+                <div className="pedido-revisao-linha">
+                    <span>Data do pedido</span>
+                    <strong>{dataPedido || "Não informada"}</strong>
+                </div>
+                <div className="pedido-revisao-linha">
+                    <span>Produtos adicionados</span>
+                    <strong>{itens.length}</strong>
+                </div>
+                <div className="pedido-revisao-linha">
+                    <span>Condição de pagamento</span>
+                    <strong>
+                        {condicaoPagamento === "1" ? "À Vista" : condicaoPagamento === "2" ? "30 Dias" : condicaoPagamento === "3" ? "30/60 Dias" : "Não selecionada"}
+                    </strong>
+                </div>
+                <div className="pedido-revisao-linha pedido-revisao-total">
+                    <span>Total do pedido</span>
+                    <strong>R$ {totalPedido.toFixed(2)}</strong>
+                </div>
+                <p className="pedido-revisao-ajuda">
+                    Se precisar corrigir alguma informação, volte à etapa corresondente.
+                </p>
+            </section>
             {erroFinalizar && <p className="erro-finalizar">{erroFinalizar}</p>}
+            {etapaAtual < 4 && (
+                <div className="pedido-navegacao-desktop">
+                    {etapaAtual === 1 && (
+                        <button
+                            type="button"
+                            className="pedido-btn-voltar"
+                            onClick={handleCancelar}
+                        >
+                            Cancelar
+                        </button>
+                    )}
+                    {etapaAtual >= 2 && (
+                        <button
+                            type="button"
+                            className="pedido-btn-voltar"
+                            onClick={voltarEtapa}
+                            disabled={etapaAtual === 1}
+                        >
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                            Voltar
+                        </button>
+                    )}
+                    <span className="pedido-navegacao-contador">
+                        Etapa {etapaAtual} de 4
+                    </span>
+                    <button
+                        type="button"
+                        className="pedido-btn-continuar"
+                        onClick={avancarEtapa}
+                    >
+                        {etapaAtual === 3 ? "Revisar pedido" : "Continuar"}
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+            )}
             {modalCancelar && (
                 <div className="modal-overlay">
                     <div className="modal-confirmacao">
@@ -792,7 +1066,7 @@ export default function NovoPedidoPage() {
                     </div>
                 </div>
             )}
-            <div className="novo-pedido-footer">
+            <div className="novo-pedido-footer" data-step="4">
                 <button type="button" className="btn-cancelar" onClick={handleCancelar}>
                     Cancelar
                 </button>
@@ -813,6 +1087,26 @@ export default function NovoPedidoPage() {
                     </button>
                 </div>
             </div>
+            {etapaAtual < 4 && (
+                <div className="pedido-navegacao-mobile">
+                    <button
+                        type="button"
+                        className="pedido-btn-voltar"
+                        onClick={voltarEtapa}
+                        disabled={etapaAtual === 1}
+                    >
+                        Voltar
+                    </button>
+                    <button
+                        type="button"
+                        className="pedido-btn-continuar"
+                        onClick={avancarEtapa}
+                    >
+                        {etapaAtual === 3 ? "Revisar pedido" : "Continuar"}
+                        <span aria-hidden="true"> →</span>
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

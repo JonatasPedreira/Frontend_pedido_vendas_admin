@@ -1,173 +1,378 @@
-* {
-  font-family: sans-serif;
-  }
 
 /* ========================================
-TEMA CLARO
+   BASE GLOBAL
 ======================================== */
 
 :root {
---bg-primary: #ffffff;
---bg-secondary: #f5f7fa;
---bg-card: #ffffff;
+    color-scheme: light;
 
---text-primary: #172333;
---text-secondary: #667085;
---text-muted: #98a2b3;
+    /* ================================
+       IDENTIDADE VISUAL GESTORERP
+    ================================ */
 
---border-color: #e4e7ec;
+    --primary-color: #006B50;
+    --primary-hover: #00543F;
+    --primary-soft: rgba(0, 107, 80, 0.10);
 
---primary-color: #0879d1;
---primary-hover: #066bb8;
+    --brand-green: #006B50;
+    --brand-yellow: #FFD426;
 
---overlay-color: rgba(0, 0, 0, 0.45);
+    /* ================================
+       FUNDOS
+    ================================ */
 
---shadow-card: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --bg-primary: #ffffff;
+    --bg-secondary: #f4f7f5;
+    --bg-card: #ffffff;
 
+    /* ================================
+       TEXTOS
+    ================================ */
+
+    --text-primary: #172b23;
+    --text-secondary: #64736b;
+    --text-muted: #89958e;
+
+    /* ================================
+       BORDAS E EFEITOS
+    ================================ */
+
+    --border-color: #dce5df;
+    --overlay-color: rgba(0, 0, 0, 0.45);
+    --shadow-card: 0 8px 24px rgba(0, 60, 43, 0.07);
+
+    /* ================================
+       INPUTS
+    ================================ */
+
+    --input-bg: #ffffff;
+    --input-border: #cfdad3;
+
+    /* ================================
+       TABELAS
+    ================================ */
+
+    --table-header-bg: #edf3ef;
+    --table-row-hover: #f4f8f5;
+
+    /* ================================
+       MODAIS
+    ================================ */
+
+    --modal-bg: #ffffff;
+    --modal-border: #dce5df;
+
+    /* ================================
+       STATUS DOS PEDIDOS
+    ================================ */
+
+    /* Faturado: verde */
+    --status-faturado-bg: #d9f5e8;
+    --status-faturado-text: #08744f;
+
+    /* Em separação: amarelo */
+    --status-separacao-bg: #fff3bd;
+    --status-separacao-text: #806000;
+
+    /* Aguardando faturamento: amarelo */
+    --status-aguardando-bg: #fff0c2;
+    --status-aguardando-text: #805f00;
+
+    /* Cancelado: vermelho */
+    --status-cancelado-bg: #fbdcdf;
+    --status-cancelado-text: #b4232d;
+
+    /* ================================
+       ÍCONES DOS CARDS
+    ================================ */
+
+    --card-icon-bg: #dcefe7;
+    --card-icon-color: #006B50;
+
+    --open-icon-bg: #fff2bf;
+    --open-icon-color: #a87900;
+
+    /* ================================
+       COMPATIBILIDADE
+       COM COMPONENTES EXISTENTES
+    ================================ */
+
+    --text-color: var(--text-primary);
+    --card-background: var(--bg-card);
+    --text-secondary-color: var(--text-secondary);
 }
-
-/* ========================================
-TEMA ESCURO
-======================================== */
-
 [data-theme="dark"] {
---bg-primary: #111827;
---bg-secondary: #0b1120;
---bg-card: #1f2937;
+    color-scheme: dark;
 
---text-primary: #f1f5f9;
---text-secondary: #cbd5e1;
---text-muted: #94a3b8;
+    /* ================================
+       FUNDOS
+    ================================ */
 
---border-color: #374151;
+    --bg-primary: #111B17;
+    --bg-secondary: #0B1410;
+    --bg-card: #192720;
 
---primary-color: #2196f3;
---primary-hover: #42a5f5;
+    /* ================================
+       TEXTOS
+    ================================ */
 
---overlay-color: rgba(0, 0, 0, 0.65);
+    --text-primary: #F1F7F3;
+    --text-secondary: #C1D0C7;
+    --text-muted: #91A398;
 
---shadow-card: 0 10px 40px rgba(0, 0, 0, 0.35);
+    /* ================================
+       BORDAS
+    ================================ */
 
+    --border-color: #34483D;
+
+    /* ================================
+       IDENTIDADE VISUAL
+    ================================ */
+
+    --primary-color: #19A578;
+    --primary-hover: #25BD8B;
+    --primary-soft: rgba(25, 165, 120, 0.16);
+
+    --brand-green: #19A578;
+    --brand-yellow: #FFD426;
+
+    /* ================================
+       EFEITOS
+    ================================ */
+
+    --overlay-color: rgba(0, 0, 0, 0.70);
+    --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.25);
+
+    /* ================================
+       INPUTS
+    ================================ */
+
+    --input-bg: #14221A;
+    --input-border: #3A5144;
+
+    /* ================================
+       TABELAS
+    ================================ */
+
+    --table-header-bg: #14221A;
+    --table-row-hover: #22372B;
+
+    /* ================================
+       MODAIS
+    ================================ */
+
+    --modal-bg: #192720;
+    --modal-border: #34483D;
+
+    /* ================================
+       STATUS DOS PEDIDOS
+    ================================ */
+
+    /* Faturado */
+    --status-faturado-bg: #153B2C;
+    --status-faturado-text: #65D6A3;
+
+    /* Em separação */
+    --status-separacao-bg: #443A16;
+    --status-separacao-text: #FFE16A;
+
+    /* Aguardando faturamento */
+    --status-aguardando-bg: #443A16;
+    --status-aguardando-text: #FFE16A;
+
+    /* Cancelado */
+    --status-cancelado-bg: #4A2027;
+    --status-cancelado-text: #F87171;
+
+    /* ================================
+       ÍCONES DOS CARDS
+    ================================ */
+
+    --card-icon-bg: #153B2C;
+    --card-icon-color: #65D6A3;
+
+    --open-icon-bg: #443A16;
+    --open-icon-color: #FFD426;
+
+    /* ================================
+       COMPATIBILIDADE
+    ================================ */
+
+    --text-color: var(--text-primary);
+    --card-background: var(--bg-card);
+    --text-secondary-color: var(--text-secondary);
 }
 
 /* ========================================
-CONFIGURAÇÕES GERAIS
+   RESET E COMPORTAMENTO GLOBAL
 ======================================== */
 
-html,
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+
 body {
-margin: 0;
-padding: 0;
-background: var(--bg-secondary);
-color: var(--text-primary);
-transition:
-background-color 0.2s ease,
-color 0.2s ease;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+img,
+svg {
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 3px;
+}
+
+/* Evita que conteúdo largo expanda a página inteira */
+#root,
+main,
+section {
+    min-width: 0;
 }
 
 /* ========================================
-MODAL DE SESSÃO EXPIRADA
+   MODAL DE SESSÃO EXPIRADA
 ======================================== */
 
 .session-expired-overlay {
-position: fixed;
-inset: 0;
-z-index: 9999;
-display: flex;
-align-items: center;
-justify-content: center;
-background: var(--overlay-color);
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    background: var(--overlay-color);
 }
 
 .session-expired-modal {
-width: min(90%, 420px);
-padding: 30px;
-background: var(--bg-card);
-border-radius: 12px;
-text-align: center;
-box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: 420px;
+    padding: 28px;
+
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+
+    text-align: center;
+    box-shadow: var(--shadow-card);
 }
 
 .session-expired-modal h2 {
-margin: 0 0 12px;
-color: var(--text-primary);
+    margin: 0 0 12px;
+    color: var(--text-primary);
+    font-size: 22px;
 }
 
 .session-expired-modal p {
-margin: 0 0 24px;
-color: var(--text-secondary);
-line-height: 1.6;
+    margin: 0 0 24px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.6;
 }
 
 .session-expired-modal button {
-border: none;
-border-radius: 6px;
-padding: 11px 20px;
-background: var(--primary-color);
-color: #fff;
-font-size: 14px;
-font-weight: 600;
-cursor: pointer;
-transition: background-color 0.2s ease;
+    min-height: 44px;
+    padding: 11px 20px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--primary-color);
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
 }
 
 .session-expired-modal button:hover {
-background: var(--primary-hover);
-}
-:root {
-  --input-bg: #ffffff;
-  --input-border: #d9dfe6;
-
-  --table-header-bg: #f1f4f8;
-  --table-row-hover: #f8fafc;
-
-  --modal-bg: #ffffff;
-  --modal-border: #e5e7eb;
-
-  --status-faturado-bg: #d9f5e8;
-  --status-faturado-text: #16855d;
-
-  --status-separacao-bg: #dceeff;
-  --status-separacao-text: #0873c4;
-
-  --status-aguardando-bg: #fff0c2;
-  --status-aguardando-text: #9b7200;
-
-  --status-cancelado-bg: #fbdcdf;
-  --status-cancelado-text: #b4232d;
-
-  --card-icon-bg: rgba(173, 220, 247, 0.966);
-  --card-icon-color: #038ffa;
-
-  --open-icon-bg: rgba(250, 217, 144, 0.966);
-  --open-icon-color: #e76e0b;
+    background: var(--primary-hover);
 }
 
-[data-theme="dark"] {
-  --input-bg: #182231;
-  --input-border: #3b4658;
+/* ========================================
+   TELAS PEQUENAS
+======================================== */
 
-  --table-header-bg: #182231;
-  --table-row-hover: #253246;
+@media (max-width: 600px) {
+    .session-expired-modal {
+        padding: 24px 20px;
+        border-radius: 14px;
+    }
 
-  --modal-bg: #1f2937;
-  --modal-border: #374151;
+    .session-expired-modal h2 {
+        font-size: 20px;
+    }
 
-  --status-faturado-bg: #123d2d;
-  --status-faturado-text: #4ade80;
+    .session-expired-modal p {
+        font-size: 14px;
+    }
+}
 
-  --status-separacao-bg: #123552;
-  --status-separacao-text: #60a5fa;
-
-  --status-aguardando-bg: #493b13;
-  --status-aguardando-text: #facc15;
-
-  --status-cancelado-bg: #4a2027;
-  --status-cancelado-text: #f87171;
-
-  --card-icon-bg: #123552;
-  --card-icon-color: #42a5f5;
-
-  --open-icon-bg: #493b13;
-  --open-icon-color: #f59e0b;
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

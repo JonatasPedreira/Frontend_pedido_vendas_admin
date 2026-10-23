@@ -14,14 +14,12 @@ import {
     faDatabase,
     faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useTheme } from "@/app/lib/theme/ThemeProvider";
 import ThemeToggle from "@/components/themetoggle/ThemeToggle";
-
 import "@/styles/layout/Header.css";
 import Link from "next/link";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
+import Image from "next/image";
 
 interface HeaderProps {
     onMenuClick: () => void;
@@ -47,7 +45,6 @@ export function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
     const [termoBusca, setTermoBusca] = useState("");
     const [isContaOpen, setIsContaOpen] = useState(false);
     const { user, logoutUser } = useAuth();
-    const { theme } = useTheme();
 
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -94,9 +91,14 @@ export function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
         <header className={`main-header ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
             <div className="header-content">
                 <div className="mobile-header-logo">
-                    <div className="Mobile-logo-icon">
-                        <FontAwesomeIcon icon={faDatabase} />
-                    </div>
+                    <Image 
+                        src="/image/Logo.fw.png"
+                        alt="Logo GestorERP"
+                        width={40}
+                        height={40}
+                        className="Mobile-logo-icon"
+                        priority
+                    />
                     <strong>
                         Gestor<span>ERP</span>
                     </strong>
@@ -105,6 +107,7 @@ export function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
                     className="menu-toggler-btn"
                     onClick={onMenuClick}
                     aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
+                    aria-expanded={isSidebarOpen}
                 >
                     <FontAwesomeIcon icon={faBars} />
                 </button>
@@ -154,8 +157,14 @@ export function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
                     <button>
                         <FontAwesomeIcon icon={faCircleQuestion} />
                     </button>
-                    <div className="user-menu-wrapper" ref={userMenuRef}>
-                        <button className="user-profile" onClick={() => setIsContaOpen(!isContaOpen)}>
+                    <div className="user-menu-wrapper desktop-user-menu" ref={userMenuRef}>
+                        <button 
+                            className="user-profile" 
+                            onClick={() => setIsContaOpen(!isContaOpen)}
+                            aria-expanded={isContaOpen}
+                            aria-haspopup="true"
+                            aria-label="Abrir menu da conta"
+                        >
                             <div className="user-avatar">{user && user.name ? getInitials(user.name): <FontAwesomeIcon icon={faUser} />}</div>
                             <div className="user-info">
                                 <strong>{user?.name || "Usuário"}</strong>
@@ -164,7 +173,7 @@ export function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
                             <FontAwesomeIcon icon={faChevronDown} />
                         </button>
                         <ul className={`count-menu ${isContaOpen ? "open" : ""}`}>
-                            <li><Link href=""><FontAwesomeIcon icon={faCircleUser} /> Perfil</Link></li>
+                            <li><Link href="/perfil"><FontAwesomeIcon icon={faCircleUser} /> Perfil</Link></li>
                             <li><Link href=""><FontAwesomeIcon icon={faUsersGear} /> Mudar de Conta</Link></li>
                             <li><button type="button" onClick={logoutUser}><FontAwesomeIcon icon={faArrowRightFromBracket} /> Sair</button></li>
                         </ul>

@@ -974,3 +974,1058 @@
         text-align: left;
     }
 }
+
+/* =========================================================
+   FORMULÁRIO POR ETAPAS - MOBILE
+   ========================================================= */
+
+.pedido-progresso-mobile,
+.pedido-navegacao-mobile,
+.pedido-revisao-mobile {
+    display: none;
+}
+
+.pedido-revisao-mobile h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.pedido-revisao-mobile > p {
+    margin: 0 0 18px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.pedido-revisao-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 13px;
+}
+
+.pedido-revisao-linha span {
+    color: var(--text-secondary);
+}
+
+.pedido-revisao-linha strong {
+    color: var(--text-primary);
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.pedido-revisao-total {
+    margin-top: 8px;
+    border-bottom: 0;
+    font-size: 16px;
+}
+
+.pedido-revisao-total strong {
+    color: var(--primary-color);
+}
+
+.pedido-revisao-mobile .pedido-revisao-ajuda {
+    margin-top: 12px;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .pedido-progresso-mobile {
+        display: block;
+        margin-bottom: 16px;
+        padding: 16px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+    }
+
+    .pedido-progresso-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    .pedido-progresso-info strong {
+        color: var(--primary-color);
+    }
+
+    .pedido-progresso-barra {
+        height: 7px;
+        margin-top: 12px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: var(--bg-secondary);
+    }
+
+    .pedido-progresso-preenchimento {
+        height: 100%;
+        border-radius: inherit;
+        background: var(--primary-color);
+        transition: width 0.25s ease;
+    }
+
+    .pedido-progresso-mobile > p {
+        margin: 10px 0 0;
+        color: var(--text-primary);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .novo-pedido-page[data-active-step="1"] [data-step]:not([data-step="1"]),
+    .novo-pedido-page[data-active-step="2"] [data-step]:not([data-step="2"]),
+    .novo-pedido-page[data-active-step="3"] [data-step]:not([data-step="3"]),
+    .novo-pedido-page[data-active-step="4"] [data-step]:not([data-step="4"]) {
+        display: none !important;
+    }
+
+    .pedido-navegacao-mobile {
+        display: flex;
+        position: sticky;
+        bottom: 8px;
+        z-index: 30;
+        gap: 10px;
+        margin-top: 14px;
+        padding: 10px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .pedido-navegacao-mobile button {
+        min-height: 46px;
+        border-radius: 8px;
+        padding: 0 16px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .pedido-btn-voltar {
+        flex: 0 0 auto;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        color: var(--text-primary);
+    }
+
+    .pedido-btn-voltar:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .pedido-btn-continuar {
+        flex: 1;
+        border: 1px solid var(--primary-color);
+        background: var(--primary-color);
+        color: #fff;
+    }
+
+    .pedido-btn-continuar:hover {
+        background: var(--primary-hover);
+    }
+
+    .pedido-navegacao-mobile button:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 3px;
+    }
+
+    .pedido-revisao-linha {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .pedido-revisao-linha strong {
+        text-align: left;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pedido-progresso-preenchimento {
+        transition: none;
+    }
+}
+.novo-pedido-mobile-topo {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .novo-pedido-page {
+        padding: 12px 16px 100px;
+        min-height: 100dvh;
+        box-sizing: border-box;
+    }
+
+    /* Cabeçalho mobile com seta para voltar */
+    .novo-pedido-mobile-topo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .novo-pedido-voltar-pedidos {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background: var(--bg-card);
+        color: var(--primary-color);
+        font-size: 17px;
+        cursor: pointer;
+    }
+
+    .novo-pedido-mobile-topo h1 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .novo-pedido-mobile-topo p {
+        margin: 4px 0 0;
+        color: var(--text-secondary);
+        font-size: 12px;
+    }
+
+    .novo-pedido-header-desktop {
+        display: none !important;
+    }
+
+    /* Etapas sem cartões ou janelas */
+    .pedido-progresso-mobile {
+        padding: 0 0 18px;
+        margin-bottom: 20px;
+        border: 0;
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .novo-pedido-card,
+    .novo-pedido-rodape,
+    .observacoes-pedido,
+    .totais-pedido,
+    .pedido-revisao-mobile {
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .novo-pedido-card {
+        padding: 0;
+        margin-bottom: 24px;
+    }
+
+    .novo-pedido-rodape {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 0;
+        margin-bottom: 24px;
+    }
+
+    .observacoes-pedido,
+    .totais-pedido {
+        padding: 0;
+    }
+
+    /* Inputs e labels diretamente sobre o fundo */
+    .cabecalho-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        min-width: 0;
+        gap: 8px;
+    }
+
+    .form-group label,
+    .observacoes-pedido label {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        min-width: 0;
+        height: 48px;
+        padding: 0 12px;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .observacoes-pedido textarea {
+        min-height: 100px;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .cliente-info-card {
+        border-radius: 8px;
+        gap: 8px;
+    }
+
+    /* Etapa de produtos */
+    .itens-pedido-header h2 {
+        font-size: 19px;
+    }
+
+    .produto-abas {
+        gap: 16px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .produto-aba {
+        flex-shrink: 0;
+    }
+
+    .produto-pesquisa {
+        flex-direction: row !important;
+        gap: 8px;
+    }
+
+    .novo-pedido-page .produto-pesquisa input {
+        height: 48px !important;
+        min-height: 48px;
+        font-size: 14px;
+    }
+
+    .novo-pedido-page .produto-pesquisa button {
+        width: 48px;
+        min-width: 48px;
+        height: 48px !important;
+        min-height: 48px;
+        padding: 0;
+    }
+
+    .produto-resultados {
+        right: 56px;
+    }
+
+    /* Ações da etapa de produtos */
+    .itens-pedido-acoes {
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .itens-pedido-acoes button {
+        min-height: 44px;
+        justify-content: center;
+    }
+
+    /* Navegação das etapas */
+    .pedido-navegacao-mobile {
+        position: sticky;
+        bottom: 8px;
+        z-index: 40;
+        margin-top: 24px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-card);
+    }
+
+    /* Revisão */
+    .pedido-revisao-mobile {
+        padding: 0;
+    }
+
+    /* Rodapé final */
+    .novo-pedido-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    .acoes-finais {
+        flex-direction: column;
+    }
+}
+@media (max-width: 768px) {
+    body:has(.novo-pedido-page) .sidebar,
+    body:has(.novo-pedido-page) .main-header,
+    body:has(.novo-pedido-page) .mobile-bottom-nav {
+        display: none !important;
+    }
+}
+/* Animação de entrada da página Novo Pedido */
+@keyframes subirPagina {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.novo-pedido-page {
+    animation: none;
+}
+
+/* Respeita a preferência do usuário por menos animações */
+@media (prefers-reduced-motion: reduce) {
+    .novo-pedido-page {
+        animation: none;
+    }
+}
+
+/* Animação individual dos componentes */
+@keyframes subirComponente {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estado inicial da animação */
+.novo-pedido-page .novo-pedido-mobile-topo,
+.novo-pedido-page .novo-pedido-header,
+.novo-pedido-page .pedido-progresso-mobile,
+.novo-pedido-page .pedido-stepper-desktop,
+.novo-pedido-page .novo-pedido-card,
+.novo-pedido-page .novo-pedido-rodape,
+.novo-pedido-page .pedido-revisao-mobile,
+.novo-pedido-page .novo-pedido-footer,
+.novo-pedido-page .pedido-navegacao-mobile {
+    animation: subirComponente 0.45s ease-out both;
+}
+
+/* Entrada em sequência */
+.novo-pedido-page .novo-pedido-mobile-topo {
+    animation-delay: 0.05s;
+}
+
+.novo-pedido-page .novo-pedido-header {
+    animation-delay: 0.05s;
+}
+
+.novo-pedido-page .pedido-progresso-mobile {
+    animation-delay: 0.12s;
+}
+
+.novo-pedido-page .novo-pedido-card[data-step="1"] {
+    animation-delay: 0.19s;
+}
+
+.novo-pedido-page .novo-pedido-card[data-step="2"] {
+    animation-delay: 0.26s;
+}
+
+.novo-pedido-page .novo-pedido-rodape {
+    animation-delay: 0.33s;
+}
+
+.novo-pedido-page .pedido-revisao-mobile {
+    animation-delay: 0.33s;
+}
+
+.novo-pedido-page .novo-pedido-footer,
+.novo-pedido-page .pedido-navegacao-mobile {
+    animation-delay: 0.40s;
+}
+
+/* Respeita a preferência por movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+    .novo-pedido-page .novo-pedido-mobile-topo,
+    .novo-pedido-page .novo-pedido-header,
+    .novo-pedido-page .pedido-progresso-mobile,
+    .novo-pedido-page .novo-pedido-card,
+    .novo-pedido-page .novo-pedido-rodape,
+    .novo-pedido-page .pedido-revisao-mobile,
+    .novo-pedido-page .novo-pedido-footer,
+    .novo-pedido-page .pedido-navegacao-mobile {
+        animation: none;
+    }
+}
+/* Exibe e anima somente no mobile */
+@media screen and (max-width: 768px) {
+    .novo-pedido-page .novo-pedido-mobile-topo {
+        display: flex !important;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+        animation: subirComponente 0.45s ease-out both;
+        animation-delay: 0.05s;
+    }
+}
+
+/* Garante que permaneça oculto no desktop */
+@media screen and (min-width: 769px) {
+    .novo-pedido-page .novo-pedido-mobile-topo {
+        display: none !important;
+        animation: none !important;
+    }
+}
+/* Modais de confirmação — correção para celular */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.6);
+
+    z-index: 99999;
+}
+
+.modal-confirmacao {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+/* Ajustes específicos para telas pequenas */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 16px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-confirmacao {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 32px);
+        border-radius: 16px;
+    }
+}
+
+/* =========================================
+   ETAPAS DO NOVO PEDIDO — DESKTOP
+   ========================================= */
+
+.pedido-stepper-desktop {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    margin: 28px 0;
+    padding: 22px 24px;
+    background: var(--card-background, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 14px;
+}
+
+.pedido-stepper-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.pedido-stepper-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 22px;
+    left: 44px;
+    right: -20px;
+    height: 2px;
+    background: var(--border-color, #d1d5db);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.pedido-stepper-item.concluido:not(:last-child)::after {
+    background: var(--primary-color, #0879d1);
+}
+
+.pedido-stepper-icone {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--border-color, #d1d5db);
+    border-radius: 50%;
+    background: var(--card-background, #ffffff);
+    color: var(--text-secondary, #6b7280);
+    font-size: 17px;
+    transition: background-color 0.2s ease, color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.pedido-stepper-item.ativo .pedido-stepper-icone,
+.pedido-stepper-item.concluido .pedido-stepper-icone {
+    border-color: var(--primary-color, #0879d1);
+    background: var(--primary-color, #0879d1);
+    color: #ffffff;
+}
+
+.pedido-stepper-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.pedido-stepper-numero {
+    color: var(--text-secondary, #6b7280);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.pedido-stepper-texto strong {
+    color: var(--text-color, #1f2937);
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.pedido-stepper-texto small {
+    color: var(--text-secondary, #6b7280);
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.pedido-stepper-item.ativo .pedido-stepper-numero,
+.pedido-stepper-item.ativo .pedido-stepper-texto strong {
+    color: var(--primary-color, #0879d1);
+}
+
+/* Navegação exclusiva do desktop */
+
+.pedido-navegacao-desktop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 24px 0;
+    padding: 18px 0;
+    border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.pedido-navegacao-contador {
+    color: var(--text-secondary, #6b7280);
+    font-size: 13px;
+}
+
+/* Usa os botões já existentes sem depender de estilos inline */
+
+.pedido-navegacao-desktop .pedido-btn-voltar,
+.pedido-navegacao-desktop .pedido-btn-continuar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.pedido-navegacao-desktop .pedido-btn-voltar {
+    border: 1px solid var(--border-color, #d1d5db);
+    background: var(--card-background, #ffffff);
+    color: var(--text-color, #1f2937);
+}
+
+.pedido-navegacao-desktop .pedido-btn-continuar {
+    border: 1px solid var(--primary-color, #0879d1);
+    background: var(--primary-color, #0879d1);
+    color: #ffffff;
+}
+
+.pedido-navegacao-desktop button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* No desktop, exibe apenas a etapa atual */
+
+@media (min-width: 769px) {
+    .novo-pedido-page[data-active-step="1"] [data-step]:not([data-step="1"]),
+    .novo-pedido-page[data-active-step="2"] [data-step]:not([data-step="2"]),
+    .novo-pedido-page[data-active-step="3"] [data-step]:not([data-step="3"]),
+    .novo-pedido-page[data-active-step="4"] [data-step]:not([data-step="4"]) {
+        display: none !important;
+    }
+
+    .pedido-revisao-mobile {
+        display: block;
+    }
+}
+
+/* Mantém o fluxo visual existente no celular */
+
+
+/* Stepper desktop: ícones acima dos textos */
+@media (min-width: 769px) {
+    .pedido-stepper-desktop {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0;
+    }
+
+    .pedido-stepper-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        min-width: 0;
+        text-align: center;
+    }
+
+    /* Remove os segmentos antigos */
+    .pedido-stepper-item:not(:last-child)::after {
+        content: none;
+    }
+
+    /* Linha de conexão atrás dos ícones */
+    .pedido-stepper-desktop::before {
+        content: "";
+        position: absolute;
+        top: 43px;
+        left: 12.5%;
+        right: 12.5%;
+        height: 2px;
+        background: var(--border-color, #d1d5db);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .pedido-stepper-icone {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+    }
+
+    .pedido-stepper-texto {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+        padding: 0 4px;
+        background: var(--card-background, #ffffff);
+    }
+
+    .pedido-stepper-texto strong,
+    .pedido-stepper-texto small {
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .pedido-stepper-desktop {
+        display: none !important;
+    }
+}
+/* Separação entre os indicadores desktop e mobile */
+@media (max-width: 768px) {
+    .pedido-stepper-desktop,
+    .pedido-navegacao-desktop {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .pedido-stepper-desktop {
+        display: grid;
+    }
+
+    .pedido-progresso-mobile,
+    .pedido-navegacao-mobile {
+        display: none !important;
+    }
+}
+/* =========================================
+   CAMPOS DE PAGAMENTO
+   ========================================= */
+
+.novo-pedido-page .pagamento-grid {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1.3fr);
+    align-items: stretch;
+    width: 100%;
+
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-card);
+    box-sizing: border-box;
+}
+
+/* Label do código, que está direto no container */
+.novo-pedido-page .pagamento-grid > label {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+
+    margin: 0;
+    padding: 10px 8px 0;
+
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Grupo do código */
+.novo-pedido-page .pagamento-grid .pagamento-group:first-of-type {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* Grupo da condição */
+.novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(2) {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* Grupo da forma de pagamento */
+.novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(3) {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+/* Grupos sem bordas ou espaçamentos extras */
+.novo-pedido-page .pagamento-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    border: none;
+    background: transparent;
+}
+
+/* Esconde a quebra de linha após o label do código */
+.novo-pedido-page .pagamento-grid > br {
+    display: none;
+}
+
+/* Campos sem bordas individuais */
+.novo-pedido-page .pagamento-group input,
+.novo-pedido-page .pagamento-group select {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 44px;
+    margin: 0;
+    padding: 0 10px;
+
+    border: none !important;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* Código de pagamento compacto */
+.novo-pedido-page .pagamento-group:first-of-type input {
+    padding: 0 4px;
+    text-align: center;
+}
+
+/* Foco sem criar bordas entre os campos */
+.novo-pedido-page .pagamento-group input:focus,
+.novo-pedido-page .pagamento-group select:focus {
+    background: var(--bg-secondary);
+    box-shadow: inset 0 0 0 1px var(--primary-color);
+}
+
+/* Mensagem de erro */
+.novo-pedido-page .erro-codigo-pagamento {
+    display: block;
+    padding: 0 6px 6px;
+    color: #dc3545;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+/* Celular */
+@media (max-width: 600px) {
+    .novo-pedido-page .pagamento-grid {
+        grid-template-columns: 85px minmax(0, 1fr);
+    }
+
+    .novo-pedido-page .pagamento-grid > label {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .novo-pedido-page .pagamento-grid .pagamento-group:first-of-type {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(2) {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(3) {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+}
+
+@media (max-width: 360px) {
+    .novo-pedido-page .pagamento-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .novo-pedido-page .pagamento-grid > label,
+    .novo-pedido-page .pagamento-grid .pagamento-group:first-of-type,
+    .novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(2),
+    .novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(3) {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+/* Código: label acima do input */
+.novo-pedido-page .pagamento-grid {
+    grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1.3fr);
+}
+
+/* Label do código na parte superior */
+.novo-pedido-page .pagamento-grid > label {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    padding: 8px 8px 0;
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Input do código abaixo do label */
+.novo-pedido-page .pagamento-grid .pagamento-group:first-of-type {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-start;
+}
+
+/* Condição e forma de pagamento ocupam as colunas seguintes */
+.novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(2) {
+    grid-column: 2;
+    grid-row: 1 / 3;
+}
+
+.novo-pedido-page .pagamento-grid .pagamento-group:nth-of-type(3) {
+    grid-column: 3;
+    grid-row: 1 / 3;
+}
+
+/* Remove a quebra de linha manual */
+.novo-pedido-page .pagamento-grid > br {
+    display: none;
+}
+/* =========================================
+   PAGAMENTO — ANIMAÇÃO E DESTAQUE
+   ========================================= */
+
+/* Transições suaves */
+.novo-pedido-page .pagamento-grid {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-card);
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background-color 0.25s ease;
+}
+
+/* Animação ao focar em qualquer campo */
+.novo-pedido-page .pagamento-grid:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--primary-color) 15%, transparent);
+}
+
+/* Transição dos inputs e selects */
+.novo-pedido-page .pagamento-group input,
+.novo-pedido-page .pagamento-group select {
+    border: none !important;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+/* Realce suave no campo selecionado */
+.novo-pedido-page .pagamento-group input:focus,
+.novo-pedido-page .pagamento-group select:focus {
+    background-color: color-mix(
+        in srgb,
+        var(--primary-color) 7%,
+        var(--bg-card)
+    );
+}
+
+/* Animação acessível */
+@media (prefers-reduced-motion: reduce) {
+    .novo-pedido-page .pagamento-grid,
+    .novo-pedido-page .pagamento-group input,
+    .novo-pedido-page .pagamento-group select {
+        transition: none;
+    }
+}
+.pagamento-label {
+    margin-top: 15px;
+}

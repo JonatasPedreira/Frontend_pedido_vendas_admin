@@ -18,7 +18,7 @@ export default function MainLayout({
 
     if (isLoginPage) {
         return (
-            <main className="w-full min-h-screen bg-white">
+            <main className="page-context animacao-entrada-pagina">
                 {children}
             </main>
         );
@@ -45,7 +45,7 @@ export default function MainLayout({
                     isSidebarOpen={isSidebarOpen}
                 />
 
-                <main className="page-content">
+                <main key={pathname} className="page-content animacao-entrada-pagina">
                     {children}
                 </main>
 

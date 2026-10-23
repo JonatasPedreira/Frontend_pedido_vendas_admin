@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/public
+/src/app/lib/auth.ts
+/src/app/lib/api.ts

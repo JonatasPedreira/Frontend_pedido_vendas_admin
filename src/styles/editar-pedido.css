@@ -1,0 +1,354 @@
+.editar-pedido {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    padding: 16px;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    box-sizing: border-box;
+}
+
+.editar-pedido *,
+.editar-pedido *::before,
+.editar-pedido *::after {
+    box-sizing: border-box;
+}
+
+.editar-pedido-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.editar-pedido-titulo {
+    min-width: 0;
+}
+
+.editar-pedido-titulo h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.editar-pedido-titulo h1 svg {
+    flex-shrink: 0;
+    color: var(--primary-color);
+}
+.editar-pedido-titulo p {
+    margin: 6px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+.editar-pedido-voltar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 16px;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0,2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+.editar-pedido-voltar svg {
+    color: var(--primary-color);
+}
+.editar-pedido-voltar:active {
+    transform: scale(0.98);
+}
+
+.editar-pedido-card {
+    min-width: 0;
+    margin-bottom: 18px;
+    padding: 18px 14px;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
+}
+.editar-pedido-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.editar-pedido-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    min-width: 0;
+    padding: 12px;
+
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+.editar-pedido-info span {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+.editar-pedido-info strong {
+    color: var(--text-primary);
+    font-size: 0.93rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.editar-pedido-tabela-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+.editar-pedido-tabela {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    font-size: 0.85rem;
+}
+
+.editar-pedido-tabela th,
+.editar-pedido-tabela td {
+    padding: 13px 12px;
+    color: var(--text-primary);
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+}
+.editar-pedido-tabela th {
+    color: var(--text-secondary);
+    background: var(--table-header-bg);
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.editar-pedido-tabela td {
+    background: var(--bg-card);
+}
+.editar-pedido-tabela tbody tr:last-child td {
+    border-bottom: none;
+}
+.editar-pedido-tabela td:nth-child(2) {
+    min-width: 180px;
+    max-width: 260px;
+    overflow-wrap: anywhere;
+}
+
+.editar-pedido-sem-produtos {
+    margin: 0;
+    padding: 20px 12px;
+
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 1px dashed var(--border-color);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.editar-pedido-resumo {
+    display: flex;
+    flex-direction: column;
+}
+.editar-pedido-resumo h2 {
+    margin-bottom: 8px;
+}
+.editar-pedido-resumo-linha {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+.editar-pedido-resumo-linha span {
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+.editar-pedido-resumo-linha strong {
+    color: var(--text-primary);
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+.editar-pedido-resumo-linha:last-child {
+    border-bottom: none;
+}
+.editar-pedido-resumo .editar-pedido-total {
+    margin-top: 8px;
+    padding: 17px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+}
+.editar-pedido-total span {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+.editar-pedido-total strong {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.editar-pedido-mensagem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 220px;
+    padding: 24px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.editar-pedido-mensagem > svg {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+.editar-pedido-mensagem p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+.editar-pedido-erro {
+    color: var(--text-primary);
+}
+.editar-pedido-erro button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 11px 16px;
+    color: var(--bg-card);
+    background: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+@media (min-width: 600px) {
+    .editar-pedido {
+        padding: 24px;
+    }
+    .editar-pedido-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .editar-pedido-titulo h1 {
+        font-size: 1.6rem;
+    }
+    .editar-pedido-voltar {
+        width: auto;
+        min-width: 120px;
+    }
+    .editar-pedido-card {
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+    .editar-pedido-card h2 {
+        font-size: 1.15rem;
+    }
+    .editar-pedido-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+    .editar-pedido-info {
+        padding: 14px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .editar-pedido {
+        padding: 28px;
+    }
+    .editar-pedido-header {
+        margin-bottom: 28px;
+    }
+    .editar-pedido-titulo h1 {
+        font-size: 1.8rem;
+    }
+    .editar-pedido-card {
+        padding: 26px;
+        border-radius: 16px;
+    }
+    .editar-pedido-info-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+    .editar-pedido-info {
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .editar-pedido-info:hover {
+        border-color: var(--primary-color);
+    }
+    .editar-pedido-voltar:hover {
+        color: var(--text-primary);
+        background: var(--bg-secondary);
+        border-color: var(--primary-color);
+    }
+    .editar-pedido-tabela th,
+    .editar-pedido-tabela td {
+        padding: 15px 16px;
+    }
+    .editar-pedido-tabela {
+        font-size: 0.9rem;
+    }
+    .editar-pedido-tabela tbody tr:hover td {
+        background: var(--table-header-bg);
+    }
+    .editar-pedido-erro button:hover {
+        background: var(--primary-hover);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .editar-pedido *,
+    .editar-pedido *::before,
+    .editar-pedido *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

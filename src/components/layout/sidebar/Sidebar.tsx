@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -16,363 +17,268 @@ import {
     faAngleUp,
     faAngleDown,
     faDatabase,
+    faChevronDown,
+    faXmark,
+    faEllipsis,
+    faUser,
+    faChartPie,
+    faGaugeHigh,
+    faTableCellsLarge,
+    faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/layout/Sidebar.css";
+import Image from "next/image";
 
 interface SidebarProps {
     isOpen: boolean;
     onClose: () => void;
 }
+interface MenuLink {
+    label: string;
+    href: string;
+}
+interface MenuGroup {
+    label: string;
+    icon: IconDefinition;
+    links: MenuLink[];
+}
+const MenuGroups: MenuGroup[] = [
+    {
+        label: "Vendas",
+        icon: faCartShopping,
+        links: [
+            { label: "Pedidos de Venda", href: "/pedidos" },
+            { label: "Orçamentos", href: "/orcamentos" },
+            { label: "Cond. de Pagamento", href: "/cond_paga" },
+            { label: "Tabelas de Preço", href: "/tabelas_preco" },
+        ],
+    },
+];
+const mobileItems = [
+    {label: "Início", href: "/", icon: faHouse },
+    {label: "Realatórios", href: "/relatorios", icon: faChartPie },
+    {label: "Dashbard", href: "/dashboard", icon: faTableCellsLarge },
+    {label: "Perfil", href: "/perfil", icon: faUser },
+];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
-
     const pathname = usePathname();
-    const isVendasActive = pathname.startsWith("/pedidos") || pathname.startsWith("/orcamentos") || pathname.startsWith("/clientes") || pathname.startsWith("/cond_paga") || pathname.startsWith("/tabelas_preco");
-    const [isVendasOpen, setIsVendasOpen] = useState(isVendasActive);
-    const [isComprasOpen, setIsComprasOpen] = useState(false);
-    const [isEstoqueOpen, setIsEstoqueOpen] = useState(false);
-    const [isFinanceiroOpen, setIsFinanceiroOpen] = useState(false);
-    const [isFaturamentoOpen, setIsFaturamentoOpen] = useState(false);
-    const [isFiscalOpen, setIsFiscalOpen] = useState(false);
-    const [isCadastroOpen, setIsCadastroOpen] = useState(false);
-    const [isRelatorioOpen, setIsRelatorioOpen] = useState(false);
-    const [isMobileVisible, setIsMobileVisible] = useState(true);
+    const [openGroup, setOpenGroup] = useState<string | null>("Vendas");
+    const [isMoreOpen, setIsMoreOpen] = useState(false);
+    const [openMobileGroup, setOpenMobileGroup] = useState<string| null>(null);
+    const { user, logoutUser } = useAuth();
 
-    useEffect(() => {
-        let ultimaPosicao = window.scrollY;
+    const isActive = (href: string) => 
+        href !== "#" && (pathname === href || (href !== "/" && pathname.startsWith(`$(href)/`)));
 
-        function controlarScroll() {
-            const posicaoAtual = window.scrollY;
+    const groupIsActive = (group: MenuGroup) => 
+        group.links.some((link) => isActive(link.href));
 
-            if (window.innerWidth <= 800){
-                if (posicaoAtual > ultimaPosicao && posicaoAtual > 10){
-                    setIsMobileVisible(false);
-                } else if (posicaoAtual < ultimaPosicao){
-                    setIsMobileVisible(true);
-                }
-            }
-
-            ultimaPosicao = posicaoAtual;
-        }
-
-        window.addEventListener("scroll", controlarScroll, {passive: true,});
-
-        return () => {
-            window.removeEventListener("scroll", controlarScroll);
-        }
-    }, []);
-
+    const closeMore = () => {
+        setIsMoreOpen(false);
+        setOpenMobileGroup(null);
+    };
+    const renderGroupLinks = (
+        group: MenuGroup,
+        mobile = false
+    ) => (
+        <ul className={mobile ? "more-submenu" : "submenu"}>
+            {group.links.map((link) => (
+                <li key={`${group.label}-${link.label}`}>
+                    {link.href === "#" ? (
+                        <span className="sidebar-placeholder">
+                            {link.label}
+                        </span>
+                    ): (
+                        <Link
+                            href={link.href}
+                            className={isActive(link.href) ? "active" : ""}
+                            onClick={() => {
+                                onClose();
+                                if (mobile) closeMore();
+                            }}
+                        >
+                            {link.label}
+                        </Link>
+                    )}
+                </li>
+            ))}
+        </ul>
+    );
     return (
-        <aside className={`sidebar ${isOpen ? "block" : "hidden"} ${isMobileVisible ? "mobile-visible" : "mobile-hidden"}`}>
-            <section className="side-sec">
-
-                <div className="logo">
-                    <div className="logo-icon">
-                        <FontAwesomeIcon icon={faDatabase} />
-                    </div>
-
-                    <div>
+        <>
+            {/* Sidebar completa: desktop */}
+            <aside
+                className={`sidebar desktop-sidebar ${
+                    isOpen ? "block" : "hidden"
+                }`}
+            >
+                <section className="side-sec">
+                    <div className="logo">
+                        <Image 
+                            src="/image/Logo.fw.png"
+                            alt="Logo GestorERP"
+                            width={40}
+                            height={40}
+                            className="sidebar-logo-image"
+                            priority
+                        />
                         <strong>Gestor<span>ERP</span></strong>
                     </div>
-                </div>
+                    <ul className="sidebar-menu">
+                        <li>
+                            <Link
+                                href={"/"}
+                                className={pathname === "/" ? "active" : ""}
+                            >
+                                <FontAwesomeIcon icon={faHouse} />
+                                <span>Início</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                href="/dashboard"
+                                className={pathname === "/dashboard" ? "active" : ""}
+                            >
+                                <FontAwesomeIcon icon={faTableColumns} />
+                                <span>Dashboard</span>
+                            </Link>
+                        </li>
 
-                <ul className="sidebar-menu">
+                        {MenuGroups.map((group) => {
+                            const active = groupIsActive(group);
+                            const expanded = openGroup === group.label;
 
-                    <li>
-                        <Link href="/" className={pathname === "/" ? "active" : ""}>
-                            <FontAwesomeIcon icon={faHouse} />
-                            <span>Início</span>
+                            return (
+                                <li key={group.label} className={`menu-group ${active ? "active": ""}`}>
+                                    <button
+                                        type="button"
+                                        className="menu-button"
+                                        aria-expanded={expanded}
+                                        onClick={() => setOpenGroup(expanded ? null : group.label)}
+                                    >
+                                        <FontAwesomeIcon icon={group.icon} />
+                                        <span>{group.label}</span>
+                                        <FontAwesomeIcon
+                                            className={`group-chevron ${expanded ? "rotated" : ""}`}
+                                            icon={faChevronDown}
+                                        />
+                                    </button>
+                                    {expanded && renderGroupLinks(group)}
+                                </li>
+                            );
+                        })}
+                        <li>
+                            <Link
+                                href="/clientes"
+                                className={pathname === "/clientes" ? "active" : ""}
+                            >
+                                <FontAwesomeIcon icon={faUsers} />
+                                <span>Clientes</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                href="/diagnostico-pagamentos"
+                                className={pathname === "/configuracoes" ? "active" : ""}
+                            >
+                                <FontAwesomeIcon icon={faGear} />
+                                <span>Configurações</span>
+                            </Link>
+                        </li>
+                    </ul>
+                    <div className="sidebar-company">
+                        <strong>Empresa Exemplo Ltda</strong>
+                        <span>CNPJ 12.345.678/0001-90</span>
+                        <span>Versão 1.0.0</span>
+                    </div>
+                </section>
+            </aside>
+
+            <nav className="mobile-bottom-nav" aria-label="Navegação Principal">
+                    {mobileItems.map((item) => (
+                        <Link
+                            key={item.label}
+                            href={item.href}
+                            className={`mobile-nav-item ${isActive(item.href) ? "active" : ""}`}
+                            onClick={closeMore}
+                        >
+                            <FontAwesomeIcon icon={item.icon} />
+                            <span>{item.label}</span>
                         </Link>
-                    </li>
-
-                    <li>
-                        <Link href="/dashboard" className={pathname === "/dashboard" ? "active" : ""}>
-                            <FontAwesomeIcon icon={faTableColumns} />
-                            <span>Dashboard</span>
-                        </Link>
-                    </li>
-
-                    <li className={`menu-group ${isVendasActive ? "active": ""}`}>
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsVendasOpen(!isVendasOpen)}>
-                                <FontAwesomeIcon icon={faCartShopping} />
-                                <span>Vendas</span>
-                                {isVendasOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
+                    ))}
+                    <button
+                        type="button"
+                        className={`mobile-nav-item mobile-more-button ${isMoreOpen ? "active" : ""}`}
+                        aria-expanded={isMoreOpen}
+                        aria-label="Mais opções"
+                        onClick={() => setIsMoreOpen((previous) => !previous)}
+                    >
+                        <FontAwesomeIcon icon={isMoreOpen ? faXmark : faEllipsis} />
+                        <span>Mais</span>
+                    </button>
+            </nav>
+            {isMoreOpen && (
+                <>
+                    <button 
+                        type="button"
+                        className="mobile-more-backdrop"
+                        aria-label="Fechar menu"
+                        onClick={closeMore}
+                    />
+                    <section
+                        className="mobile-more-panel"
+                        aria-label="Outras áreas do sistema"
+                    >
+                        <div className="mobile-more-header">
+                            <div>
+                                <h2>Mais opções</h2>
+                                <p>Outras áreas do GestorERP</p>
+                            </div>
+                            <button
+                                type="button"
+                                aria-label="Fechar menu"
+                                onClick={closeMore}
+                            >
+                                <FontAwesomeIcon icon={faXmark} />
                             </button>
                         </div>
-                        <ul className={`submenu ${isVendasOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="/pedidos" className={pathname === "/pedidos" ? "active" : ""}>Pedidos de Venda</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">Orçamentos</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">Clientes</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">Cond. de Pagamento</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">Tabelas de Preço</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li className="menu-group">
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsComprasOpen(!isComprasOpen)}>
-                                <FontAwesomeIcon icon={faCartShopping} />
-                                <span>Compras</span>
-                                {isComprasOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
-                            </button>
+                        <div className="mobile-more-list">
+                            <Link
+                                href="/"
+                                className="mobile-more-dashboard"
+                                onClick={closeMore}
+                            >
+                                <FontAwesomeIcon icon={faHouse} />
+                                <span>Inicio</span>
+                            </Link>
+                            {MenuGroups.map((group) => {
+                                const expanded = openMobileGroup === group.label;
+                                return (
+                                    <div
+                                        className={`mobile-more-group ${groupIsActive(group) ? "active" :"" }`}
+                                        key={`mobile-${group.label}`}
+                                    >
+                                        <button
+                                            type="button"
+                                            className="mobile-more-group-button"
+                                            aria-expanded={expanded}
+                                            onClick={() => setOpenMobileGroup(expanded ? null : group.label)}
+                                        >
+                                            <FontAwesomeIcon icon={group.icon} />
+                                            <span>{group.label}</span>
+                                            <FontAwesomeIcon className={`group-chevron ${expanded ? "rotaded" : ""}`} icon={faChevronDown} />
+                                        </button>
+                                        {expanded && renderGroupLinks(group, true)}
+                                    </div>
+                                );
+                            })}
                         </div>
-                            <ul className={`submenu ${isComprasOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li className="menu-group">
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsEstoqueOpen(!isEstoqueOpen)}>
-                                <FontAwesomeIcon icon={faWarehouse} />
-                                <span>Estoque</span>
-                                {isEstoqueOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
-                            </button>
-                        </div>
-                            <ul className={`submenu ${isEstoqueOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li className="menu-group">
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsFinanceiroOpen(!isFinanceiroOpen)}>
-                                <FontAwesomeIcon icon={faDollarSign} />
-                                <span>Financeiro</span>
-                                {isFinanceiroOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
-                            </button>
-                        </div>
-                            <ul className={`submenu ${isFinanceiroOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li className="menu-group">
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsFaturamentoOpen(!isFaturamentoOpen)}>
-                                <FontAwesomeIcon icon={faFileInvoiceDollar} />
-                                <span>Faturamento</span>
-                                {isFaturamentoOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
-                            </button>
-                        </div>
-                            <ul className={`submenu ${isFaturamentoOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li className="menu-group">
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsFiscalOpen(!isFiscalOpen)}>
-                                <FontAwesomeIcon icon={faReceipt} />
-                                <span>Fiscal</span>
-                                {isFiscalOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
-                            </button>
-                        </div>
-                            <ul className={`submenu ${isFiscalOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li className="menu-group">
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsCadastroOpen(!isCadastroOpen)}>
-                                <FontAwesomeIcon icon={faUserGroup} />
-                                <span>Cadastros</span>
-                                {isCadastroOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
-                            </button>
-                        </div>
-                            <ul className={`submenu ${isCadastroOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li className="menu-group">
-
-                        <div className="menu-title">
-                            <button className="menu-button" onClick={() => setIsRelatorioOpen(!isRelatorioOpen)}>
-                                <FontAwesomeIcon icon={faChartColumn} />
-                                <span>Relatórios</span>
-                                {isRelatorioOpen ? (<FontAwesomeIcon icon={faAngleUp} />): (<FontAwesomeIcon icon={faAngleDown} />)}
-                            </button>
-                        </div>
-                            <ul className={`submenu ${isRelatorioOpen ? "open" : ""}`}>
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-
-                            <li>
-                                <Link href="#">############</Link>
-                            </li>
-                        </ul>
-
-                    </li>
-
-                    <li>
-                        <Link href="#">
-                            <FontAwesomeIcon icon={faGear} />
-                            <span>Configurações</span>
-                        </Link>
-                    </li>
-
-                </ul>
-
-                <div className="sidebar-company">
-                    <strong>Empresa Exemplo Ltda</strong>
-                    <span>CNPJ 12.345.678/0001-90</span>
-                    <span>Versão 1.0.0</span>
-                </div>
-
-            </section>
-        </aside>
+                    </section>
+                </>
+            )}
+        </>
     );
 }

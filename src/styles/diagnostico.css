@@ -1,0 +1,249 @@
+
+.diagnostico-pagamentos {
+    width: 100%;
+    min-width: 0;
+    padding: 24px;
+    color: var(--text-primary, #1f2937);
+    box-sizing: border-box;
+}
+
+.diagnostico-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.diagnostico-cabecalho h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.diagnostico-cabecalho p,
+.diagnostico-secao-cabecalho p {
+    margin: 0;
+    color: var(--text-secondary, #6b7280);
+    font-size: 14px;
+}
+
+.diagnostico-atualizar {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-color, #0879d1);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.diagnostico-atualizar:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.diagnostico-resumo {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.diagnostico-card {
+    padding: 20px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    background: var(--bg-card, #fff);
+}
+
+.diagnostico-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-secondary, #6b7280);
+    font-size: 14px;
+}
+
+.diagnostico-card strong {
+    font-size: 28px;
+}
+
+.diagnostico-tabelas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+}
+
+.diagnostico-secao {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    background: var(--bg-card, #fff);
+}
+
+.diagnostico-secao-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.diagnostico-secao-cabecalho h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.diagnostico-contagem {
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: var(--bg-secondary, #f3f4f6);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.diagnostico-busca {
+    width: 100%;
+    min-height: 42px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 8px;
+    background: var(--bg-input, var(--bg-card, #fff));
+    color: var(--text-primary, #1f2937);
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.diagnostico-busca:focus {
+    outline: 2px solid var(--primary-color, #0879d1);
+    outline-offset: 1px;
+}
+
+.diagnostico-tabela-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.diagnostico-tabela-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+
+.diagnostico-tabela-wrapper th,
+.diagnostico-tabela-wrapper td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.diagnostico-tabela-wrapper th {
+    color: var(--text-secondary, #6b7280);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.diagnostico-tabela-wrapper td:first-child {
+    font-weight: 700;
+}
+
+.diagnostico-tabela-wrapper tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.diagnostico-tabela-wrapper tbody tr:hover {
+    background: var(--bg-hover, rgba(128, 128, 128, 0.06));
+}
+
+.diagnostico-erro {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.diagnostico-carregamento {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 220px;
+}
+
+.diagnostico-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color, #d1d5db);
+    border-top-color: var(--primary-color, #0879d1);
+    border-radius: 50%;
+    animation: diagnostico-girar 0.8s linear infinite;
+}
+
+.diagnostico-observacao {
+    margin-top: 24px;
+    color: var(--text-secondary, #6b7280);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@keyframes diagnostico-girar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 1000px) {
+    .diagnostico-tabelas {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .diagnostico-pagamentos {
+        padding: 16px;
+    }
+
+    .diagnostico-cabecalho {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .diagnostico-cabecalho h1 {
+        font-size: 22px;
+    }
+
+    .diagnostico-atualizar {
+        width: 100%;
+    }
+
+    .diagnostico-resumo {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .diagnostico-card {
+        padding: 16px;
+    }
+
+    .diagnostico-card strong {
+        font-size: 24px;
+    }
+
+    .diagnostico-secao {
+        padding: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .diagnostico-spinner {
+        animation: none;
+    }
+}

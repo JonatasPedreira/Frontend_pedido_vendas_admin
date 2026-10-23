@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getOrderById, OrderDetails } from "@/app/lib/orders";
 import "@/styles/visualizar-pedido.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
 
 export default function VisualizarPedidoPage() {
     const params = useParams();
@@ -14,31 +16,48 @@ export default function VisualizarPedidoPage() {
     const [erro, setErro] = useState("");
 
     useEffect(() => {
-        if (!params.id) return;
+        const id = Array.isArray(params.id) ? params.id[0] : params.id;
+        if (!id || !/^\d+$/.test(id) || Number(id) <= 0) {
+            return;
+        }
+        let ativo = true;
+        async function carregarPedido() {
+            try {
+                const data = await getOrderById(Number(id));
 
-        getOrderById(Number(params.id))
-            .then((data) => {
-                setPedido(data);
-            })
-            .catch((error) => {
+                if (ativo) {
+                    setPedido(data);
+                    setErro("");
+                }
+            } catch (error) {
                 console.error("ERRO AO BUSCAR PEDIDO:", error);
-                setErro("Não foi possível carregar o pedido.");
-            })
-            .finally(() => {
-                setCarregando(false);
-            });
-    }, [params.id]);
 
+                if (ativo) {
+                    setErro("Não foi possível carregar o pedido.");
+                }
+            } finally {
+                if (ativo) {
+                    setCarregando(false);
+                }
+            }
+        }
+        carregarPedido();
+        return () => {
+            ativo = false;
+        };
+    }, [params.id]);
     function formatarData(data: string | null | undefined) {
         if (!data) return "-";
 
-        const dataFormatada = new Date(data);
+        const dataISO = data.substring(0, 10);
+        const partes = dataISO.split("-");
 
-        if (isNaN(dataFormatada.getTime())) {
+        if (partes.length !== 3 || !partes[0] || !partes[1] || !partes[2]) {
             return "-";
         }
+        const [ano, mes, dia] = partes;
 
-        return dataFormatada.toLocaleDateString("pt-BR");
+        return `${dia}/${mes}/${ano}`;
     }
 
     function formatarHora(hora: string | null | undefined) {
@@ -46,7 +65,7 @@ export default function VisualizarPedidoPage() {
 
         const data = new Date(hora);
 
-        if (isNaN(data.getTime())) {
+        if (Number.isNaN(data.getTime())) {
             return "-";
         }
 
@@ -59,101 +78,122 @@ export default function VisualizarPedidoPage() {
     function formatarMoeda(valor: number | null | undefined) {
         const numero = Number(valor ?? 0);
 
-        return `R$ ${numero.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        })}`;
+        return numero.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        });
     }
 
     if (carregando) {
         return (
             <main className="visualizar-pedido">
-                <div className="visualizar-carregando">
-                    Carregando pedido...
+                <div className="visualizar-estado">
+                    <span className="visualizar-spinner" aria-hidden="true" />
+                    <p>Carregando pedido...</p>
                 </div>
             </main>
         );
     }
 
-    if (erro) {
+    if (erro || !pedido) {
         return (
             <main className="visualizar-pedido">
-                <div className="visualizar-erro">
-                    {erro}
+                <div className="visualizar-estado visualizar-estado-erro">
+                    <span className="visualizar-estado-icone" aria-hidden="true">
+                        !
+                    </span>
+
+                    <h2>{erro ? "Não foi possível abrir o pedido" : "Pedido não encontrado"}</h2>
+
+                    <p>{erro || "O pedido solicitado não foi encontrado."}</p>
+
+                    <button
+                        type="button"
+                        className="visualizar-btn-secundario"
+                        onClick={() => router.back()}
+                    >
+                        Voltar
+                    </button>
                 </div>
             </main>
         );
     }
 
-    if (!pedido) {
-        return (
-            <main className="visualizar-pedido">
-                <div className="visualizar-erro">
-                    Pedido não encontrado.
-                </div>
-            </main>
-        );
-    }
+    const statusPedido: Record<number, string> = {
+        1: "Aguardando faturamento",
+        2: "Em separação",
+        3: "Faturado",
+        4: "Cancelado",
+    };
+
+    const codigoStatus = Number(pedido.SIT_CODIGO);
+    const nomeStatus =
+        statusPedido[codigoStatus] ?? `Status ${pedido.SIT_CODIGO ?? "-"}`;
 
     return (
         <main className="visualizar-pedido">
-
-            {/* CABEÇALHO */}
-
-            <div className="visualizar-header">
-
+            {/* Cabeçalho */}
+            <header className="visualizar-header">
                 <div className="visualizar-header-esquerda">
                     <button
                         type="button"
                         className="btn-voltar-pedido"
                         onClick={() => router.back()}
+                        aria-label="Voltar para a página anterior"
+                        title="Voltar"
                     >
-                        ←
+                        <span aria-hidden="true"><FontAwesomeIcon icon={faArrowLeft} /></span>
                     </button>
 
-                    <div>
+                    <div className="visualizar-titulo-grupo">
                         <span className="visualizar-subtitulo">
-                            Pedido
+                            Vendas / Pedidos / Detalhes
                         </span>
 
-                        <h1>
-                            #{pedido.VEN_NUMERO}
-                        </h1>
+                        <h1>Pedido #{pedido.VEN_NUMERO}</h1>
+
+                        <span className="visualizar-cliente-resumo">
+                            {pedido.CLI_NOME || "Cliente não informado"}
+                        </span>
                     </div>
                 </div>
 
-                <div className="visualizar-status">
-                    Status: {pedido.SIT_CODIGO}
+                <div
+                    className={`visualizar-status visualizar-status-${codigoStatus}`}
+                    role="status"
+                >
+                    <span className="visualizar-status-ponto" aria-hidden="true" />
+                    {nomeStatus}
                 </div>
+            </header>
 
-            </div>
-
-
-            {/* INFORMAÇÕES DO PEDIDO */}
-
+            {/* Informações do pedido */}
             <section className="visualizar-card">
-
                 <div className="visualizar-card-header">
-                    <h2>Informações do pedido</h2>
+                    <div>
+                        <h2>Informações do pedido</h2>
+                        <p>Dados gerais da venda</p>
+                    </div>
                 </div>
 
                 <div className="visualizar-info-grid">
-
                     <div className="visualizar-info">
                         <span>Cliente</span>
-                        <strong>{pedido.CLI_NOME}</strong>
+                        <strong title={pedido.CLI_NOME || "-"}>
+                            {pedido.CLI_NOME || "-"}
+                        </strong>
                     </div>
 
                     <div className="visualizar-info">
                         <span>Vendedor</span>
-                        <strong>{pedido.FUN_NOME}</strong>
+                        <strong title={pedido.FUN_NOME || "-"}>
+                            {pedido.FUN_NOME || "-"}
+                        </strong>
                     </div>
 
                     <div className="visualizar-info">
                         <span>Data</span>
-                        <strong>
-                            {formatarData(pedido.VEN_DATA)}
-                        </strong>
+                        <strong>{formatarData(pedido.VEN_DATA)}</strong>
                     </div>
 
                     <div className="visualizar-info">
@@ -163,237 +203,247 @@ export default function VisualizarPedidoPage() {
 
                     <div className="visualizar-info">
                         <span>Forma de pagamento</span>
-                        <strong>{pedido.FPG_DESCRICAO}</strong>
+                        <strong title={pedido.FPG_DESCRICAO || "-"}>
+                            {pedido.FPG_DESCRICAO || "-"}
+                        </strong>
                     </div>
 
                     <div className="visualizar-info">
                         <span>Condição de pagamento</span>
-                        <strong>{pedido.PLP_DESCRICAO}</strong>
+                        <strong title={pedido.PLP_DESCRICAO || "-"}>
+                            {pedido.PLP_DESCRICAO || "-"}
+                        </strong>
                     </div>
 
                     <div className="visualizar-info">
                         <span>Tipo</span>
-                        <strong>{pedido.VEN_TIPO}</strong>
+                        <strong>{pedido.VEN_TIPO || "-"}</strong>
                     </div>
 
                     <div className="visualizar-info">
                         <span>Origem</span>
-                        <strong>{pedido.VEN_ORIGEMDAV}</strong>
+                        <strong>{pedido.VEN_ORIGEMDAV || "-"}</strong>
                     </div>
-
                 </div>
-
             </section>
 
-
-            {/* PRODUTOS */}
-
-            <section className="visualizar-card">
-
-                <div className="visualizar-card-header">
+            {/* Produtos: tabela para desktop e cards para celular */}
+            <section className="visualizar-card visualizar-produtos-card">
+                <div className="visualizar-card-header visualizar-produtos-header">
                     <div>
-                        <h2>Produtos</h2>
-
-                        <span className="visualizar-card-descricao">
-                            {pedido.items.length} produto(s) no pedido
-                        </span>
+                        <h2>Produtos do pedido</h2>
+                        <p>
+                            {pedido.items.length}{" "}
+                            {pedido.items.length === 1
+                                ? "produto no pedido"
+                                : "produtos no pedido"}
+                        </p>
                     </div>
                 </div>
 
-                <div className="visualizar-tabela-container">
+                {pedido.items.length === 0 ? (
+                    <div className="visualizar-lista-vazia">
+                        Nenhum produto encontrado neste pedido.
+                    </div>
+                ) : (
+                    <>
+                        <div className="visualizar-tabela-container">
+                            <table className="visualizar-tabela">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Produto</th>
+                                        <th>Qtd.</th>
+                                        <th>Preço unitário</th>
+                                        <th>Desconto</th>
+                                        <th>Total</th>
+                                        <th>Líquido</th>
+                                    </tr>
+                                </thead>
 
-                    <table className="visualizar-tabela">
+                                <tbody>
+                                    {pedido.items.map((item, index) => (
+                                        <tr
+                                            key={`${item.PRO_CODIGO}-${index}`}
+                                        >
+                                            <td>{item.PRO_CODIGO}</td>
 
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Produto</th>
-                                <th>Qtd.</th>
-                                <th>Preço</th>
-                                <th>Desconto</th>
-                                <th>Total</th>
-                                <th>Líquido</th>
-                            </tr>
-                        </thead>
+                                            <td className="visualizar-produto-nome">
+                                                <strong>
+                                                    {item.PRO_DESCRICAO || "-"}
+                                                </strong>
+                                            </td>
 
-                        <tbody>
+                                            <td>{item.IVD_QTDE}</td>
 
+                                            <td>{formatarMoeda(item.IVD_PRECO)}</td>
+
+                                            <td>
+                                                {formatarMoeda(item.IVD_DESCONTO)}
+                                            </td>
+
+                                            <td>{formatarMoeda(item.IVD_TOTAL)}</td>
+
+                                            <td className="visualizar-valor-liquido">
+                                                {formatarMoeda(item.IVD_LIQUIDO)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="visualizar-produtos-mobile">
                             {pedido.items.map((item, index) => (
-                                <tr
+                                <article
+                                    className="visualizar-produto-mobile"
                                     key={`${item.PRO_CODIGO}-${index}`}
                                 >
-                                    <td>
-                                        {item.PRO_CODIGO}
-                                    </td>
+                                    <div className="visualizar-produto-mobile-topo">
+                                        <div className="visualizar-produto-identificacao">
+                                            <span className="visualizar-produto-codigo">
+                                                Código: {item.PRO_CODIGO}
+                                            </span>
 
-                                    <td>
+                                            <h3>{item.PRO_DESCRICAO || "-"}</h3>
+                                        </div>
+
+                                        <div className="visualizar-produto-quantidade">
+                                            <span>Qtd.</span>
+                                            <strong>{item.IVD_QTDE}</strong>
+                                        </div>
+                                    </div>
+
+                                    <div className="visualizar-produto-mobile-detalhes">
+                                        <div>
+                                            <span>Preço unitário</span>
+                                            <strong>
+                                                {formatarMoeda(item.IVD_PRECO)}
+                                            </strong>
+                                        </div>
+
+                                        <div>
+                                            <span>Desconto</span>
+                                            <strong>
+                                                {formatarMoeda(item.IVD_DESCONTO)}
+                                            </strong>
+                                        </div>
+
+                                        <div>
+                                            <span>Total bruto</span>
+                                            <strong>
+                                                {formatarMoeda(item.IVD_TOTAL)}
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <div className="visualizar-produto-mobile-total">
+                                        <span>Valor líquido</span>
                                         <strong>
-                                            {item.PRO_DESCRICAO}
+                                            {formatarMoeda(item.IVD_LIQUIDO)}
                                         </strong>
-                                    </td>
-
-                                    <td>
-                                        {item.IVD_QTDE}
-                                    </td>
-
-                                    <td>
-                                        {formatarMoeda(item.IVD_PRECO)}
-                                    </td>
-
-                                    <td>
-                                        {formatarMoeda(item.IVD_DESCONTO)}
-                                    </td>
-
-                                    <td>
-                                        {formatarMoeda(item.IVD_TOTAL)}
-                                    </td>
-
-                                    <td>
-                                        <strong>
-                                            {formatarMoeda(
-                                                item.IVD_LIQUIDO
-                                            )}
-                                        </strong>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </article>
                             ))}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
+                        </div>
+                    </>
+                )}
             </section>
 
-
-            {/* DETALHES DE ENTREGA */}
+            {/* Entrega e resumo financeiro */}
             <div className="visualizar-final-grid">
                 <section className="visualizar-card">
-
                     <div className="visualizar-card-header">
-                        <h2>Entrega e logística</h2>
+                        <div>
+                            <h2>Entrega e logística</h2>
+                            <p>Informações de transporte e entrega</p>
+                        </div>
                     </div>
 
-                    <div className="visualizar-info-grid">
-
+                    <div className="visualizar-info-grid visualizar-logistica-grid">
                         <div className="visualizar-info campo-oculto">
                             <span>Transportadora</span>
-                            <strong>
-                                {pedido.TRA_NOME || "-"}
-                            </strong>
+                            <strong>{pedido.TRA_NOME || "-"}</strong>
                         </div>
 
                         <div className="visualizar-info campo-oculto">
                             <span>Previsão de entrega</span>
                             <strong>
-                                {formatarData(
-                                    pedido.VEN_DTPREVISAOENT
-                                )}
+                                {formatarData(pedido.VEN_DTPREVISAOENT)}
                             </strong>
                         </div>
 
                         <div className="visualizar-info campo-oculto">
                             <span>Data de entrega</span>
-                            <strong>
-                                {formatarData(
-                                    pedido.VEN_ENTREGA
-                                )}
-                            </strong>
+                            <strong>{formatarData(pedido.VEN_ENTREGA)}</strong>
                         </div>
 
                         <div className="visualizar-info campo-oculto">
                             <span>Data de montagem</span>
-                            <strong>
-                                {formatarData(
-                                    pedido.VEN_MONTAGEM
-                                )}
-                            </strong>
+                            <strong>{formatarData(pedido.VEN_MONTAGEM)}</strong>
                         </div>
 
                         <div className="visualizar-info campo-oculto">
                             <span>Peso total</span>
                             <strong>
-                                {pedido.PESO} kg
+                                {pedido.PESO != null ? `${pedido.PESO} kg` : "-"}
                             </strong>
                         </div>
 
                         <div className="visualizar-info">
                             <span>Quantidade de itens</span>
-                            <strong>
-                                {pedido.VEN_QUANT}
-                            </strong>
+                            <strong>{pedido.VEN_QUANT ?? "-"}</strong>
                         </div>
-
                     </div>
-
                 </section>
 
-
-                {/* RESUMO FINANCEIRO */}
-
+                {/* Resumo financeiro */}
                 <section className="visualizar-card visualizar-resumo">
-
                     <div className="visualizar-card-header">
-                        <h2>Resumo financeiro</h2>
+                        <div>
+                            <h2>Resumo financeiro</h2>
+                            <p>Valores totais do pedido</p>
+                        </div>
                     </div>
 
                     <div className="resumo-financeiro">
-
                         <div className="resumo-linha">
                             <span>Total bruto</span>
-
                             <strong>
-                                {formatarMoeda(
-                                    pedido.VEN_TOTALBRUTO
-                                )}
+                                {formatarMoeda(pedido.VEN_TOTALBRUTO)}
                             </strong>
                         </div>
 
                         <div className="resumo-linha">
                             <span>Desconto</span>
-
                             <strong>
-                                {formatarMoeda(
-                                    pedido.VEN_TOTALDESC
-                                )}
+                                {formatarMoeda(pedido.VEN_TOTALDESC)}
                             </strong>
                         </div>
 
                         <div className="resumo-linha">
                             <span>Valor de entrega</span>
-
                             <strong>
-                                {formatarMoeda(
-                                    pedido.VEN_VALORENT
-                                )}
+                                {formatarMoeda(pedido.VEN_VALORENT)}
                             </strong>
                         </div>
 
                         <div className="resumo-linha">
                             <span>Valor pendente</span>
-
                             <strong>
-                                {formatarMoeda(
-                                    pedido.VEN_VALORPENDENTE
-                                )}
+                                {formatarMoeda(pedido.VEN_VALORPENDENTE)}
                             </strong>
                         </div>
 
                         <div className="resumo-linha resumo-total">
                             <span>Total líquido</span>
-
                             <strong>
-                                {formatarMoeda(
-                                    pedido.VEN_TOTALLIQUIDO
-                                )}
+                                {formatarMoeda(pedido.VEN_TOTALLIQUIDO)}
                             </strong>
                         </div>
-
                     </div>
-
                 </section>
-            </div>                
+            </div>
         </main>
     );
 }
