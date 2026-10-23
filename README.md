@@ -172,4 +172,6 @@ vendas-next/
 ├── README.md
 └── tsconfig.json
 ```
+<img width="1366" height="686" alt="image" src="https://github.com/user-attachments/assets/d78fb6e3-c13a-4f2c-8804-ad08902f3aca" />
+<img width="1366" height="642" alt="image" src="https://github.com/user-attachments/assets/d258f69b-5b55-4a34-a17f-2a26ebb0261e" />
 
