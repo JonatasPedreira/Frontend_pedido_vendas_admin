@@ -9,7 +9,9 @@ import Icon from "@mdi/react";
 import { mdiClockTimeThreeOutline, mdiCurrencyUsd, mdiFileDocumentOutline, mdiFinance } from "@mdi/js";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faPencil, faSliders, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faPencil, faSliders, faXmark, faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import FiltrosPedidos from "@/components/pedidos/FiltrosPedidos";
+import AcoesPedidos from "@/components/pedidos/AcoesPedidos";
 
 const ITENS_POR_PAGINA = 10;
 const PEDIDOS_POR_CARGA = 100;
@@ -111,6 +113,7 @@ export default function PedidosPage() {
     const [filtrando, setFiltrando] = useState(false);
     const [limpandoFiltro, setLimpandoFiltro] = useState(false);
     const [filtrosAbertos, setFiltrosAbertos] = useState(false);
+    const [pedidoMenuAberto, setPedidoMenuAberto] = useState<number | null>(null);
 
     const totalPaginasFiltro = Math.max(1, Math.ceil(pedidosFiltrados.length / ITENS_POR_PAGINA));
     const inicio = filtroAtivo ? (paginaAtual - 1) * ITENS_POR_PAGINA : ((paginaAtual - 1) % (PEDIDOS_POR_CARGA / ITENS_POR_PAGINA)) * ITENS_POR_PAGINA;
@@ -685,140 +688,26 @@ export default function PedidosPage() {
                     )}
                 </button>
             </div>
-
-            {/* Fundo escurecido */}
-            {filtrosAbertos && (
-                <button
-                    type="button"
-                    className="mobile-filters-backdrop"
-                    aria-label="Fechar filtros"
-                    onClick={() => setFiltrosAbertos(false)}
-                />
-            )}
-
-            {/* Painel de filtros */}
-            <section
-                id="pedidos-filters-panel"
-                className={`filters-card ${filtrosAbertos ? "filters-open" : ""}`}
-            >
-                <div className="mobile-filters-header">
-                    <div>
-                        <h2>Filtros</h2>
-                        <p>Refine sua busca de pedidos</p>
-                    </div>
-
-                    <button
-                        type="button"
-                        className="mobile-filters-close"
-                        onClick={() => setFiltrosAbertos(false)}
-                        aria-label="Fechar filtros"
-                    >
-                        <FontAwesomeIcon icon={faXmark} />
-                    </button>
-                </div>
-
-                <div className="periodo-filtro">
-                    <label>Período</label>
-
-                    <div className="periodo-input">
-                        <input
-                            type="date"
-                            value={filtroDataInicio}
-                            onChange={(e) => setFiltroDataInicio(e.target.value)}
-                        />
-
-                        <span>até</span>
-
-                        <input
-                            type="date"
-                            value={filtroDataFim}
-                            onChange={(e) => setFiltroDataFim(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label>Cliente</label>
-
-                    <select
-                        value={filtroCliente}
-                        onChange={(e) => setFiltroCliente(e.target.value)}
-                    >
-                        <option value="">Todos os clientes</option>
-
-                        {clientes.map((c) => (
-                            <option
-                                key={c.CLI_CODIGO}
-                                value={c.CLI_CODIGO}
-                            >
-                                {c.CLI_NOME}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label>Status</label>
-
-                    <select
-                        value={filtroStatus}
-                        onChange={(e) => setFiltroStatus(e.target.value)}
-                    >
-                        <option value="">Todos</option>
-                        <option value="1">Aguardando Faturamento</option>
-                        <option value="2">Em Separação</option>
-                        <option value="3">Faturado</option>
-                        <option value="4">Cancelado</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Vendedor</label>
-
-                    <select
-                        value={filtroVendedor}
-                        onChange={(e) => setFiltroVendedor(e.target.value)}
-                    >
-                        <option value="">Todos</option>
-
-                        {[...new Map(
-                            pedidos.map((p) => [
-                                p.FUN_CODIGO,
-                                p.FUN_NOME,
-                            ])
-                        ).entries()].map(([codigo, nome]) => (
-                            <option key={codigo} value={codigo}>
-                                {nome}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <button
-                    type="button"
-                    className="filter-button"
-                    onClick={filtrarPedidos}
-                    disabled={filtrando}
-                >
-                    {filtrando ? (
-                        <>
-                            <span className="button-spinner" />
-                            Filtrando...
-                        </>
-                    ) : (
-                        "Filtrar"
-                    )}
-                </button>
-
-                <button
-                    type="button"
-                    className="clear-button"
-                    onClick={limparFiltros}
-                    disabled={limpandoFiltro}
-                >
-                    {limpandoFiltro ? "Limpando..." : "Limpar filtros"}
-                </button>
-            </section>
+            <FiltrosPedidos 
+                clientes={clientes}
+                pedidos={pedidos}
+                filtroCliente={filtroCliente}
+                setFiltroCliente={setFiltroCliente}
+                filtroVendedor={filtroVendedor}
+                setFiltroVendedor={setFiltroVendedor}
+                filtroStatus={filtroStatus}
+                setFiltroStatus={setFiltroStatus}
+                filtroDataInicio={filtroDataInicio}
+                setFiltroDataInicio={setFiltroDataInicio}
+                filtroDataFim={filtroDataFim}
+                setFiltroDataFim={setFiltroDataFim}
+                filtrosAbertos={filtrosAbertos}
+                setFiltrosAbertos={setFiltrosAbertos}
+                filtrarPedidos={filtrarPedidos}
+                limparFiltros={limparFiltros}
+                filtrando={filtrando}
+                limpandoFiltro={limpandoFiltro} 
+            />
             <section className="table-card">
                {carregando ? (
                     <div className="tabela-loading">
@@ -895,28 +784,10 @@ export default function PedidosPage() {
                                                     </span>
                                                 </td>
                                                 <td className="acoes-pedidos">
-                                                    <button
-                                                        type="button"
-                                                        className="btn-acoes-pedido"
-                                                        onClick={() =>
-                                                            router.push(
-                                                                `/pedidos/${pedido.VEN_NUMERO}`
-                                                            )
-                                                        }
-                                                        aria-label={`Visualizar pedido ${pedido.VEN_NUMERO}`}
-                                                        title="Visualizar pedido"
-                                                    >
-                                                        <FontAwesomeIcon icon={faEye} />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="btn-acoes-pedido"
-                                                        onClick={() => router.push(`/pedidos/${pedido.VEN_NUMERO}/editar`)}
-                                                        aria-label={`Editar pedido ${pedido.VEN_NUMERO}`}
-                                                        title="Editar pedido"
-                                                    >
-                                                        <FontAwesomeIcon icon={faPencil} />
-                                                    </button>
+                                                    <AcoesPedidos 
+                                                        pedidoId={pedido.VEN_NUMERO}
+                                                        statusPedido={pedido.SIT_CODIGO}
+                                                    />
                                                 </td>
                                             </tr>
                                         );
@@ -995,26 +866,10 @@ export default function PedidosPage() {
                                                 </div>
 
                                                 <div className="pedido-mobile-acoes">
-                                                    <button
-                                                        type="button"
-                                                        className="btn-mobile-visualizar"
-                                                        onClick={() =>
-                                                            router.push(`/pedidos/${pedido.VEN_NUMERO}`)
-                                                        }
-                                                    >
-                                                        <FontAwesomeIcon icon={faEye} />
-                                                        Visualizar
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="btn-mobile-editar"
-                                                        onClick={() =>
-                                                            router.push(`/pedidos/${pedido.VEN_NUMERO}/editar`)
-                                                        }
-                                                    >
-                                                        <FontAwesomeIcon icon={faPencil} />
-                                                        Editar
-                                                    </button>
+                                                    <AcoesPedidos
+                                                        pedidoId={pedido.VEN_NUMERO}
+                                                        statusPedido={pedido.SIT_CODIGO}
+                                                    />
                                                 </div>
                                             </div>
                                         </article>

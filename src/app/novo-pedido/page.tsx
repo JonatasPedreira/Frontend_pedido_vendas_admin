@@ -307,7 +307,6 @@ export default function NovoPedidoPage() {
         if (!vendedor) return "Selecione o vendedor.";
         if (!condicaoPagamento) return "Selecione a condição de pagamento.";
         if (!formaPagamento) return "Selecione a forma de pagamento.";
-        if (!tabelaPrecos) return "Selecione a tabela de preços.";
         if (itens.length === 0) return "Adicione ao menos um produto.";
         return null;
     }
@@ -320,10 +319,6 @@ export default function NovoPedidoPage() {
             }
             if (!vendedor) {
                 setErroFinalizar("Não foi possível identificar o vendedor.");
-                return;
-            }
-            if (!tabelaPrecos) {
-                setErroFinalizar("Selecione a tabela de preços.");
                 return;
             }
         }
@@ -642,15 +637,6 @@ export default function NovoPedidoPage() {
                     </div>
 
                     <div className="form-group">
-                        <label>Tabela de Preços <span>*</span></label>
-                        <select value={tabelaPrecos} onChange={(e) => setTabelaPrecos(e.target.value)}>
-                            <option value="">Selecione a tabela</option>
-                            <option value="1">Varejo</option>
-                            <option value="2">Atacado</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
                         <div className="form-group">
                             <label>Vendedor</label>
                             <input
@@ -659,15 +645,6 @@ export default function NovoPedidoPage() {
                                 disabled
                             />
                         </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Tipo de Frete</label>
-                        <select value={tipoFrete} onChange={(e) => setTipoFrete(e.target.value)}>
-                            <option value="">Selecione</option>
-                            <option value="CIF">CIF</option>
-                            <option value="FOB">FOB</option>
-                        </select>
                     </div>
 
                     <div className="form-group observacoes-col">

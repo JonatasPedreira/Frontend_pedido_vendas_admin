@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar/Sidebar";
 import { Header } from "./header/Header";
+import NavigationLoading from "./NavigationLoading";
 import "@/styles/layout/MainLayout.css";
 
 export default function MainLayout({
@@ -18,7 +19,7 @@ export default function MainLayout({
 
     if (isLoginPage) {
         return (
-            <main className="page-context animacao-entrada-pagina">
+            <main className="page-context">
                 {children}
             </main>
         );
@@ -26,6 +27,7 @@ export default function MainLayout({
 
     return (
         <div className="main-layout">
+            <NavigationLoading />
 
             <Sidebar
                 isOpen={isSidebarOpen}

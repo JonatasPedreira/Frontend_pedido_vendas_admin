@@ -58,7 +58,7 @@ const MenuGroups: MenuGroup[] = [
 ];
 const mobileItems = [
     {label: "Início", href: "/", icon: faHouse },
-    {label: "Realatórios", href: "/relatorios", icon: faChartPie },
+    {label: "Clientes", href: "/relatorios", icon: faUsers },
     {label: "Dashbard", href: "/dashboard", icon: faTableCellsLarge },
     {label: "Perfil", href: "/perfil", icon: faUser },
 ];
