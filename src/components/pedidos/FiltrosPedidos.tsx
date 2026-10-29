@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import type { Client } from "@/app/lib/clients";
 import type { Order } from "@/app/lib/orders";
 import { createPortal } from "react-dom";
+import Select from "../ui/Select";
+import type { SelectOption } from "../ui/Select";
 
 interface FiltrosPedidosProps {
     clientes: Client[];
@@ -59,6 +61,37 @@ export default function FiltrosPedidos({
             mediaQuery.removeEventListener("change", verificarTela);
         }
     }, []);
+    const opcoesClientes: SelectOption[] = [
+        {
+            value: "",
+            label: "Todos os clientes",
+        },
+        ...clientes.map((cliente) => ({
+            value: String(cliente.CLI_CODIGO),
+            label: cliente.CLI_NOME,
+        })),
+    ];
+    const opcoesStatus: SelectOption[] = [
+        { value: "", label: "Todos" },
+        { value: "1", label: "Aguardando Faturamento" },
+        { value: "2", label: "Em Separação" },
+        { value: "3", label: "Faturado" },
+        { value: "4", label: "Cancelado" },
+    ];
+    const opcoesVendedores: SelectOption[] = [
+        { value: "", label: "Todos"},
+        ...Array.from(
+            new Map(
+                pedidos.map((pedido) => [
+                    String(pedido.FUN_CODIGO),
+                    pedido.FUN_NOME,
+                ])
+            ).entries()
+        ).map(([codigo, nome]) => ({
+            value: codigo,
+            label: nome,
+        })),
+    ];
     const painelFiltros = (
         <>
             {filtrosAbertos && (
@@ -103,53 +136,33 @@ export default function FiltrosPedidos({
                     </div>
                 </div>
                 <div>
-                    <label>Cliente</label>
-                    <select
+                    <Select 
+                        label="Cliente"
+                        name="filtroCliente"
                         value={filtroCliente}
-                        onChange={(e) => setFiltroCliente}
-                    >
-                        <option value="">Todos os clientes</option>
-                        {clientes.map((cliente) => (
-                            <option
-                                key={cliente.CLI_CODIGO}
-                                value={cliente.CLI_CODIGO}
-                            >
-                                {cliente.CLI_NOME}
-                            </option>
-                        ))}
-                    </select>
+                        onChange={setFiltroCliente}
+                        options={opcoesClientes}
+                        searchable
+                    />
                 </div>
                 <div>
-                    <label>Status</label>
-                    <select
+                    <Select 
+                        label="Status"
+                        name="filtroStatus"
                         value={filtroStatus}
-                        onChange={(e) => setFiltroStatus}
-                    >
-                        <option value="">Todos</option>
-                        <option value="1">Aguardando Faturamento</option>
-                        <option value="2">Em Separação</option>
-                        <option value="3">Faturado</option>
-                        <option value="4">Cancelado</option>
-                    </select>
+                        onChange={setFiltroStatus}
+                        options={opcoesStatus}
+                    />
                 </div>
                 <div>
-                    <label>Vendedor</label>
-                    <select
+                    <Select 
+                        label="Vendedor"
+                        name="filtroVendedor"
                         value={filtroVendedor}
-                        onChange={(e) => setFiltroVendedor(e.target.value)}
-                    >
-                        <option value="">Todos</option>
-                        {[...new Map(
-                            pedidos.map((pedido) => [
-                                pedido.FUN_CODIGO,
-                                pedido.FUN_NOME,
-                            ])
-                        ).entries()].map(([codigo, nome]) => (
-                            <option key={codigo} value={codigo}>
-                                {nome}
-                            </option>
-                        ))}
-                    </select>
+                        onChange={setFiltroVendedor}
+                        options={opcoesVendedores}
+                        searchable
+                    />
                 </div>
                 <button
                     type="button"

@@ -645,3 +645,100 @@
         box-sizing: border-box;
     }
 }
+/* ========================================
+   ANIMAÇÃO DE ENTRADA DO LOGIN
+======================================== */
+
+.login-page-container.login-page-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.login-page-container.login-page-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Animação do cartão */
+.login-page-visible .login-card {
+    animation: login-card-enter 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Animação dos elementos decorativos */
+.login-page-visible .login-decoration-green {
+    animation: login-green-enter 1s ease-out both;
+}
+
+.login-page-visible .login-decoration-yellow {
+    animation: login-yellow-enter 1.2s ease-out both;
+}
+
+.login-page-visible .login-bottom-decoration {
+    animation: login-bottom-enter 1s ease-out both;
+}
+
+/* ========================================
+   KEYFRAMES
+======================================== */
+
+@keyframes login-card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(45px) scale(0.94);
+        filter: blur(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes login-green-enter {
+    from {
+        opacity: 0;
+        transform: translate(-35px, -20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes login-yellow-enter {
+    from {
+        opacity: 0;
+        transform: translate(35px, -20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes login-bottom-enter {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    .login-page-visible .login-card,
+    .login-page-visible .login-decoration-green,
+    .login-page-visible .login-decoration-yellow,
+    .login-page-visible .login-bottom-decoration {
+        animation: none !important;
+    }
+}

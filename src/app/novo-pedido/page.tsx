@@ -11,6 +11,8 @@ import { createOrder, getOrders } from "../lib/orders";
 import { getPaymentMethods, PaymentMethod } from "@/app/lib/payment-methods";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
+import Select from "@/components/ui/Select";
+import type { SelectOption } from "@/components/ui/Select";
 
 interface ItemPedido {
     id: number;
@@ -273,6 +275,22 @@ export default function NovoPedidoPage() {
 
         return () => clearTimeout(timer);
     }, [produtoQuery]);
+
+    const opcoesCondicaoPagamento: SelectOption[] =[
+        { value: "", label: "Selecione a condição" },
+        { value: "99", label:"ENT/A VISTA" },
+        ...Array.from({length: 12}, (_, i) => i +1).map((codigo) => ({
+            value: String(codigo),
+            label: `0 + ${codigo}`,
+        })),
+    ];
+    const opcoesFormasPagamento: SelectOption[] = [
+        { value: "", label: "Selecione a forma"},
+        ...formasPagamento.map((forma) => ({
+            value: String(forma.FPG_CODIGO),
+            label: `${forma.FPG_CODIGO} - ${forma.FPG_DESCRICAO}`,
+        })),
+    ];
 
     useEffect(() => {
         getPaymentMethods().then(setFormasPagamento).catch(() => setFormasPagamento([]));
@@ -829,23 +847,25 @@ export default function NovoPedidoPage() {
                         )}
                     </div>
                     <div className="pagamento-group">
-                        <select value={condicaoPagamento} onChange={(e) => setCondicaoPagamento(e.target.value)}>
-                            <option value="">Selecione a condição</option>
-                            <option value="99">ENT/A VISTA</option>
-                            {Array.from({ length:12 }, (_, i) => i + 1).map((codigo) => (
-                                <option key={codigo} value={String(codigo)}>
-                                    0 + {codigo}
-                                </option>
-                            ))}
-                        </select>
+                        <Select 
+                            label=""
+                            name="condicaoPagamento"
+                            value={condicaoPagamento}
+                            onChange={setCondicaoPagamento}
+                            options={opcoesCondicaoPagamento}
+                        />
                     </div>
                     <div className="pagamento-group">
-                        <select value={formaPagamento} onChange={(e) => {setFormaPagamento(e.target.value === "" ? "" : Number(e.target.value))}}>
-                            <option value="">Selecione a forma</option>
-                            {formasPagamento.map((f) => (
-                                <option key={f.FPG_CODIGO} value={f.FPG_CODIGO}>{f.FPG_CODIGO} - {f.FPG_DESCRICAO}</option>
-                            ))}
-                        </select>
+                        <Select 
+                            label=""
+                            name="formaPagamento"
+                            value={formaPagamento === "" ? "" : String(formaPagamento)}
+                            onChange={(valor) => {
+                                setFormaPagamento(valor === "" ? "" : Number(valor));
+                            }}
+                            options={opcoesFormasPagamento}
+                            searchable
+                        />
                     </div>
                 </div>
             </section>

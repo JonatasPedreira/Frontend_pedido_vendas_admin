@@ -1,0 +1,111 @@
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg-primary, #f8faf9);
+    color: var(--text-primary, #1f2937);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.loading-screen-exit {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+    animation: loading-appear 0.7s ease both;
+}
+.loading-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 18px;
+    color: #ffff;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--primary-color, #16a34a) 25%, transparent);
+    animation: loading-float 2s ease-in-out infinite;
+}
+.loading-logo-icon {
+    font-size: 2rem;
+    font-weight: 800;
+}
+.loading-title {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+.loading-subtitle {
+    margin: 8px 0 28px;
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.95rem;
+    text-align: center;
+}
+.loading-progress {
+    width: 190px;
+    height: 4px;
+    overflow: hidden;
+    background: var(--border-color, #e5e7eb);
+    border-radius: 999px;
+}
+.loading-progress-bar {
+    width: 40%;
+    height: 100%;
+    background: var(--primary-color, #16a34a);
+    border-radius: inherit;
+    animation: loading-progress 1.4s ease-in-out infinite;
+}
+.loading-message {
+    margin-top: 14px;
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.8rem;
+}
+@keyframes loading-appear {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes loading-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+@keyframes loading-progress {
+    0% {
+        transform: translateX(-120%);
+    }
+    100% {
+        transform: translateX(350%);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .loading-content,
+    .loading-logo,
+    .loading-progress-bar {
+        animation: none;
+    }
+    .loading-screen {
+        transition: none;
+    }
+}

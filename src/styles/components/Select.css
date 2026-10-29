@@ -1,0 +1,217 @@
+.custom-select {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    width: 100%;
+    min-width: 0;
+}
+.custom-select-label {
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+.custom-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 13px;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: 
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease
+    ;
+}
+.custom-select-trigger:hover:not(:disabled) {
+    border-color: var(--primary-color);
+}
+.custom-select-trigger:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+.custom-select-open .custom-select-trigger {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 15%, transparent);
+}
+.custom-select-trigger:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.custom-select-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.custom-select-placeholder {
+    color: var(--text-primary);
+}
+.custom-select-arrow {
+    flex-shrink: 0;
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+.custom-select-open .custom-select-arrow {
+    transform: rotate(180deg);
+}
+.custom-select-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+    animation: custom-select-entrar 0.16s ease-out;
+}
+@keyframes custom-select-entrar {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.custom-select-search {
+    display: block;
+    width: calc(100% - 20px);
+    min-height: 40px;
+    margin: 10px;
+    padding: 9px 11px;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 0.88rem;
+    outline: none;
+}
+.custom-select-search:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 15%, transparent);
+}
+.custom-select-options {
+    max-height: 240px;
+    margin: 0;
+    padding: 5px;
+    overflow-y: auto;
+    list-style: none;
+}
+.custom-select-option {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    padding: 10px 12px;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 0.88rem;
+    text-align: left;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    transition: 
+        color 0.15s ease,
+        background-color 0.15s ease
+    ;
+}
+.custom-select-option:hover:not(:disabled) {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+.custom-select-option.selected {
+    color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 12%, var(--bg-card));
+    font-weight: 700;
+}
+.custom-select-option:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+.custom-select-option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.custom-select-empty {
+    padding: 14px 10px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-align: center;
+}
+@media (max-width: 600px) {
+    .custom-select-trigger {
+        min-height: 48px;
+    }
+    .custom-select-options {
+        max-height: 200px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .custom-select *,
+    .custom-select *::before,
+    .custom-select *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+/* ========================================
+   DROPDOWN RENDERIZADO VIA PORTAL
+======================================== */
+
+.custom-select-portal {
+    box-sizing: border-box;
+    max-width: calc(100vw - 16px);
+    max-height: min(320px, calc(100vh - 16px));
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+    overscroll-behavior: contain;
+}
+
+/* A pesquisa permanece dentro do dropdown */
+.custom-select-portal .custom-select-search {
+    flex-shrink: 0;
+}
+
+/* Apenas a lista rola, não o dropdown inteiro */
+.custom-select-portal .custom-select-options {
+    min-height: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* Quando há espaço insuficiente abaixo, abre para cima */
+.custom-select-dropdown-above {
+    transform: translateY(calc(-100% - 6px));
+}
+
+@media (max-width: 600px) {
+    .custom-select-portal {
+        max-height: min(280px, calc(100vh - 16px));
+    }
+
+    .custom-select-portal .custom-select-options {
+        max-height: 200px;
+    }
+}

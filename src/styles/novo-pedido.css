@@ -2029,3 +2029,188 @@
 .pagamento-label {
     margin-top: 15px;
 }
+/* ========================================
+   PAGAMENTO — CAMPOS INTEGRADOS
+======================================== */
+
+.pagamento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 0;
+
+    width: 100%;
+    min-width: 0;
+}
+
+/* Cada campo ocupa somente o espaço disponível */
+.pagamento-grid .pagamento-group {
+    position: relative;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Campo de código e botão dos selects */
+.pagamento-grid .pagamento-group > input,
+.pagamento-grid .pagamento-group .custom-select-trigger {
+    width: 100%;
+    height: 46px;
+    min-height: 46px;
+    margin: 0;
+    padding: 11px 13px;
+
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+
+    color: var(--text-primary);
+    background: var(--bg-card);
+
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+/* Primeiro campo: cantos esquerdos arredondados */
+.pagamento-grid .pagamento-group:first-child > input {
+    border-radius: 10px 0 0 10px;
+}
+
+/* Campo do meio: remove a sobreposição das bordas */
+.pagamento-grid .pagamento-group:nth-child(2) .custom-select-trigger {
+    border-left: 0;
+}
+
+/* Último campo: cantos direitos arredondados */
+.pagamento-grid .pagamento-group:last-child .custom-select-trigger {
+    border-left: 0;
+    border-radius: 0 10px 10px 0;
+}
+
+/* Evita que o estilo do componente altere a altura do grupo */
+.pagamento-grid .custom-select {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+}
+
+/* Os labels dos selects ficam fora da aparência de input único */
+.pagamento-grid .custom-select-label {
+    position: absolute;
+    left: 12px;
+    top: -9px;
+    z-index: 2;
+
+    padding: 0 4px;
+
+    background: var(--bg-card);
+    color: var(--text-secondary);
+
+    font-size: 0.72rem;
+    line-height: 1.2;
+}
+
+/* Foco verde */
+.pagamento-grid .pagamento-group > input:focus,
+.pagamento-grid .pagamento-group .custom-select-trigger:focus-visible,
+.pagamento-grid .custom-select-open .custom-select-trigger {
+    position: relative;
+    z-index: 3;
+
+    outline: none;
+    border-color: var(--primary-color);
+
+    box-shadow: 0 0 0 2px color-mix(
+        in srgb,
+        var(--primary-color) 18%,
+        transparent
+    );
+}
+
+/* O dropdown continua aparecendo abaixo do campo */
+.pagamento-grid .custom-select-dropdown {
+    top: calc(100% + 6px);
+    z-index: 1000;
+}
+
+/* Mensagem de erro */
+.pagamento-grid .erro-codigo-pagamento {
+    display: block;
+    margin-top: 6px;
+
+    color: #dc2626;
+    font-size: 0.78rem;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 700px) {
+    .pagamento-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .pagamento-grid .pagamento-group > input,
+    .pagamento-grid .pagamento-group .custom-select-trigger {
+        height: 48px;
+        min-height: 48px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+    }
+
+    .pagamento-grid .pagamento-group:nth-child(2) .custom-select-trigger,
+    .pagamento-grid .pagamento-group:last-child .custom-select-trigger {
+        border-left: 1px solid var(--border-color);
+        border-radius: 10px;
+    }
+}
+/* ========================================
+   PAGAMENTO — MOBILE
+======================================== */
+
+@media screen and (max-width: 700px) {
+    .pagamento-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+
+        width: 100%;
+        gap: 16px;
+
+        margin: 0;
+        padding: 0;
+    }
+
+    .pagamento-grid > .pagamento-group {
+        display: flex;
+        flex-direction: column;
+
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+
+        margin: 0;
+        padding: 0;
+    }
+
+    .pagamento-grid .custom-select {
+        display: block;
+        width: 100% !important;
+        min-width: 0;
+    }
+
+    .pagamento-grid .custom-select-trigger,
+    .pagamento-grid .pagamento-group > input {
+        display: flex;
+        width: 100% !important;
+        min-height: 48px;
+
+        box-sizing: border-box;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+    }
+}
